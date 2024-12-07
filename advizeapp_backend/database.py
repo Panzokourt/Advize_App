@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 import os
 
-# Φόρτωση .env
-load_dotenv()
-
-# Παίρνουμε το URL της βάσης από το .env
+# Λήψη του DATABASE_URL από τα environment variables (Heroku)
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not SQLALCHEMY_DATABASE_URL:
+    raise ValueError("The DATABASE_URL environment variable is not set.")
+
 
 # Ρύθμιση σύνδεσης
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
