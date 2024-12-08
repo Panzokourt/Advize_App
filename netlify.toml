@@ -1,6 +1,7 @@
 [build]
-  command = "pip install -r requirements.txt && uvicorn advizeapp_backend.main:app --host=0.0.0.0 --port=$PORT"
-  publish = "."
+  base = "advizeapp-frontend"  # Ο φάκελος όπου βρίσκεται το frontend
+  command = "npm run build"   # Εντολή για τη δημιουργία του frontend build
+  publish = "advizeapp-frontend/build"  # Ο φάκελος που περιέχει τα static αρχεία
 
 [context.production.environment]
-  DATABASE_URL = "postgresql://postgres:pWYxLIDjmUkXiRiGeXljoAtJKeVWlViG@junction.proxy.rlwy.net:28163/railway"
+  REACT_APP_BACKEND_URL = "https://advizeapp-0bd9740bb742.herokuapp.com"
