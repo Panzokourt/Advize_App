@@ -11,6 +11,9 @@ import {
   useTheme,
 } from "@mui/material";
 
+// Δυναμικό URL για το backend (χρησιμοποιεί περιβαλλοντική μεταβλητή ή default fallback)
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
+
 const Clients = () => {
   const [clients, setClients] = useState([]);
   const [formData, setFormData] = useState({
@@ -27,7 +30,7 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/v1/clients/");
+      const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`);
       setClients(response.data);
     } catch (error) {
       console.error("Error fetching clients:", error.response?.data || error.message);
@@ -43,7 +46,7 @@ const Clients = () => {
     try {
       if (editingClient) {
         const response = await axios.put(
-          `http://127.0.0.1:8000/api/v1/clients/${editingClient.id}`,
+          `${BACKEND_URL}/api/v1/clients/${editingClient.id}`,
           formData
         );
         setClients((prev) =>
@@ -54,7 +57,7 @@ const Clients = () => {
         setEditingClient(null);
       } else {
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/v1/clients/",
+          `${BACKEND_URL}/api/v1/clients/`,
           formData
         );
         setClients((prev) => [...prev, response.data]);
@@ -77,7 +80,7 @@ const Clients = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/v1/clients/${id}`);
+      await axios.delete(`${BACKEND_URL}/api/v1/clients/${id}`);
       setClients((prev) => prev.filter((client) => client.id !== id));
     } catch (error) {
       console.error("Error deleting client:", error.response?.data || error.message);

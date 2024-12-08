@@ -14,6 +14,9 @@ import {
 // Register Chart.js components
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
+// Δυναμικό URL για το backend (χρησιμοποιεί περιβαλλοντική μεταβλητή ή default fallback)
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
+
 const Dashboard = () => {
   const [data, setData] = useState({
     totalClients: 0,
@@ -28,9 +31,9 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [clients, tasks, services] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/v1/clients/summary/?company_id=1"),
-          axios.get("http://127.0.0.1:8000/api/v1/tasks/status-summary/?company_id=1"),
-          axios.get("http://127.0.0.1:8000/api/v1/services/summary/?company_id=1"),
+          axios.get(`${BACKEND_URL}/api/v1/clients/summary/?company_id=1`),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/?company_id=1`),
+          axios.get(`${BACKEND_URL}/api/v1/services/summary/?company_id=1`),
         ]);
         setData({
           totalClients: clients.data.total_clients || 0,

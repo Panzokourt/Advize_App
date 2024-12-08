@@ -1,0 +1,19 @@
+# Περιβάλλον και ευαίσθητα δεδομένα
+.env
+
+# Python-related αρχεία
+__pycache__/
+*.pyc
+*.pyo
+
+# Node.js-related αρχεία
+node_modules/
+package-lock.json
+
+# Βάσεις δεδομένων
+*.db
+
+# Άλλα
+.DS_Store
+*.log
+

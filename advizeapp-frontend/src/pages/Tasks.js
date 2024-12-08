@@ -11,6 +11,9 @@ import {
   useTheme,
 } from "@mui/material";
 
+// Dynamic backend URL (uses environment variable or default fallback)
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
+
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [formData, setFormData] = useState({
@@ -26,7 +29,7 @@ const Tasks = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/v1/tasks/");
+      const response = await axios.get(`${BACKEND_URL}/api/v1/tasks/`);
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error.response?.data || error.message);
@@ -42,7 +45,7 @@ const Tasks = () => {
     try {
       if (editingTask) {
         const response = await axios.put(
-          `http://127.0.0.1:8000/api/v1/tasks/${editingTask.id}`,
+          `${BACKEND_URL}/api/v1/tasks/${editingTask.id}`,
           formData
         );
         setTasks((prev) =>
@@ -53,7 +56,7 @@ const Tasks = () => {
         setEditingTask(null);
       } else {
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/v1/tasks/",
+          `${BACKEND_URL}/api/v1/tasks/`,
           formData
         );
         setTasks((prev) => [...prev, response.data]);
@@ -76,7 +79,7 @@ const Tasks = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/v1/tasks/${id}`);
+      await axios.delete(`${BACKEND_URL}/api/v1/tasks/${id}`);
       setTasks((prev) => prev.filter((task) => task.id !== id));
     } catch (error) {
       console.error("Error deleting task:", error.response?.data || error.message);
