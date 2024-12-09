@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
   TextField,
@@ -36,7 +36,7 @@ const Clients = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Fetch clients with optional filters
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`, {
         params: filters, // Apply search filters
@@ -45,12 +45,12 @@ const Clients = () => {
     } catch (error) {
       console.error("Error fetching clients:", error.response?.data || error.message);
     }
-  };
+  }, [filters]); // useCallback ensures `fetchClients` is stable
 
   // Fetch clients on component mount and when filters change
   useEffect(() => {
     fetchClients();
-  }, [filters]);
+  }, [fetchClients]); // Include `fetchClients` as a dependency
 
   // Handle form submission for create/update
   const handleSubmit = async (e) => {
