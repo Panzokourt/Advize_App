@@ -15,11 +15,6 @@ class ServiceCreate(BaseModel):
     description: Optional[str] = Field(None, example="Description of the service")
     price: float = Field(..., example=99.99)
 
-class ServiceUpdate(BaseModel):
-    name: Optional[str] = Field(None, example="Updated Service Name")
-    description: Optional[str] = Field(None, example="Updated description")
-    price: Optional[float] = Field(None, example=150.0)
-
 class ServiceResponse(BaseModel):
     id: int
     company_id: int
@@ -36,22 +31,12 @@ class ServiceResponse(BaseModel):
 @router.get("/", response_model=List[ServiceResponse])
 def list_services(
     company_id: int,
-    name: Optional[str] = None,
-    min_price: Optional[float] = None,
-    max_price: Optional[float] = None,
     db: Session = Depends(get_db),
 ):
     try:
-        query = db.query(Service).filter(Service.company_id == company_id)
-
-        if name:
-            query = query.filter(Service.name.ilike(f"%{name}%"))
-        if min_price is not None:
-            query = query.filter(Service.price >= min_price)
-        if max_price is not None:
-            query = query.filter(Service.price <= max_price)
-
-        services = query.all()
+        services = db.query(Service).filter(Service.company_id == company_id).all()
+        if not services:
+            raise HTTPException(status_code=404, detail="No services found for this company")
         return services
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -75,19 +60,15 @@ def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
 
 # PUT endpoint για ενημέρωση υπηρεσίας
 @router.put("/{service_id}", response_model=ServiceResponse)
-def update_service(service_id: int, service: ServiceUpdate, db: Session = Depends(get_db)):
+def update_service(service_id: int, service: ServiceCreate, db: Session = Depends(get_db)):
     try:
         db_service = db.query(Service).filter(Service.id == service_id).first()
         if not db_service:
             raise HTTPException(status_code=404, detail="Service not found")
 
-        if service.name is not None:
-            db_service.name = service.name
-        if service.description is not None:
-            db_service.description = service.description
-        if service.price is not None:
-            db_service.price = service.price
-
+        db_service.name = service.name
+        db_service.description = service.description
+        db_service.price = service.price
         db.commit()
         db.refresh(db_service)
         return db_service
@@ -101,7 +82,6 @@ def delete_service(service_id: int, db: Session = Depends(get_db)):
         db_service = db.query(Service).filter(Service.id == service_id).first()
         if not db_service:
             raise HTTPException(status_code=404, detail="Service not found")
-
         db.delete(db_service)
         db.commit()
         return {"message": "Service deleted successfully"}
