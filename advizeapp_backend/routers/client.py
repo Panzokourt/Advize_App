@@ -28,12 +28,15 @@ class ClientResponse(BaseModel):
 
 # Endpoint για επιστροφή όλων των πελατών
 @router.get("/", response_model=List[ClientResponse])
-def get_clients(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def get_clients(company_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     """
-    Επιστρέφει όλους τους πελάτες με δυνατότητα pagination.
+    Επιστρέφει τους πελάτες για μια συγκεκριμένη εταιρεία.
     """
-    clients = db.query(Client).offset(skip).limit(limit).all()
+    clients = db.query(Client).filter(Client.company_id == company_id).offset(skip).limit(limit).all()
+    if not clients:
+        raise HTTPException(status_code=404, detail="No clients found for this company")
     return clients
+
 
 # Endpoint για δημιουργία νέου πελάτη
 @router.post("/", response_model=ClientResponse)

@@ -4,10 +4,12 @@
   publish = "build"            # Ο φάκελος που δημιουργείται από την εντολή `npm run build`
   
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 [context.production.environment]
   REACT_APP_BACKEND_URL = "https://advizeapp-0bd9740bb742.herokuapp.com"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://advizeapp-0bd9740bb742.herokuapp.com/:splat"
+  status = 200
+  force = true
+
