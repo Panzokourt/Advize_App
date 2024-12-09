@@ -1,6 +1,8 @@
 [build]
-  command = "npm run build"
-  publish = "advizeapp-frontend/build"
+  base = "advizeapp-frontend"  # Το σωστό base directory
+  command = "npm run build"    # Εντολή κατασκευής του frontend
+  publish = "build"            # Ο φάκελος που δημιουργείται από την εντολή `npm run build`
+  
 
 [[redirects]]
   from = "/*"
