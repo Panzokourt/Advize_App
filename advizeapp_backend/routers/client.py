@@ -6,7 +6,7 @@ from advizeapp_backend.models import Client
 from typing import List
 
 # Δημιουργία router
-router = APIRouter(prefix="/api/v1/clients", tags=["clients"])
+router = APIRouter()
 
 # Pydantic model για validation
 class ClientCreate(BaseModel):

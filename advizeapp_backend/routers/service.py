@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, List
 
-router = APIRouter(prefix="/api/v1/services", tags=["services"])
+router = APIRouter()
 
 # Pydantic schema για validation
 class ServiceCreate(BaseModel):
