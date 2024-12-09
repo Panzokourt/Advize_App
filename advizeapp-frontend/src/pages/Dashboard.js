@@ -31,9 +31,9 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [clients, tasks, services] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/v1/clients/summary/?company_id=1`),
-          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/?company_id=1`),
-          axios.get(`${BACKEND_URL}/api/v1/services/summary/?company_id=1`),
+          axios.get(`${BACKEND_URL}/api/v1/clients/summary/`),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/`),
+          axios.get(`${BACKEND_URL}/api/v1/services/summary/`),
         ]);
         setData({
           totalClients: clients.data.total_clients || 0,
