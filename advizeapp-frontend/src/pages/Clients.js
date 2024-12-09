@@ -30,10 +30,7 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-        const companyId = 1; // ή δυναμικά από state / authentication
-        const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`, {
-            params: { company_id: companyId },
-        });
+        const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`)
         setClients(response.data);
     } catch (error) {
         console.error("Error fetching clients:", error.response?.data || error.message);
