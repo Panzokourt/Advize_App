@@ -25,19 +25,19 @@ app.add_middleware(
 
 # Εισαγωγή routers
 try:
-    app.include_router(company.router, prefix="/api/v1")
+    app.include_router(company.router)
     logger.info("Company router loaded successfully")
-    app.include_router(employee.router, prefix="/api/v1")
+    app.include_router(employee.router)
     logger.info("Employee router loaded successfully")
-    app.include_router(client.router, prefix="/api/v1")
+    app.include_router(client.router)
     logger.info("Client router loaded successfully")
     app.include_router(task.router, prefix="/api/v1")
     logger.info("Task router loaded successfully")
-    app.include_router(service.router, prefix="/api/v1")
+    app.include_router(service.router)
     logger.info("Service router loaded successfully")
-    app.include_router(auth.router, prefix="/api/v1")
+    app.include_router(auth.router)
     logger.info("Auth router loaded successfully")
-    app.include_router(dashboard.router, prefix="/api/v1")
+    app.include_router(dashboard.router)
     logger.info("Dashboard router loaded successfully")
 except Exception as e:
     logger.error(f"Error loading routers: {e}")
