@@ -17,7 +17,7 @@ app = FastAPI()
 # Εισαγωγή του CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend origin
+    allow_origins=["https://advizeapp.com"],  # Frontend origin
     allow_credentials=True,
     allow_methods=["*"],  # Επιτρέπει όλα τα HTTP methods
     allow_headers=["*"],  # Επιτρέπει όλα τα headers
