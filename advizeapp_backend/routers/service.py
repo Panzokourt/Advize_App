@@ -10,14 +10,12 @@ router = APIRouter(prefix="/api/v1/services", tags=["services"])
 
 # Pydantic schema για validation
 class ServiceCreate(BaseModel):
-    company_id: int
     name: str
     description: Optional[str]
     price: float
 
 class ServiceResponse(BaseModel):
     id: int
-    company_id: int
     name: str
     description: Optional[str]
     price: float
@@ -30,7 +28,6 @@ class ServiceResponse(BaseModel):
 @router.post("/", response_model=ServiceResponse)
 def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
     new_service = Service(
-        company_id=service.company_id,
         name=service.name,
         description=service.description,
         price=service.price,
@@ -41,16 +38,11 @@ def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
     return new_service
 
 @router.get("/", response_model=List[ServiceResponse])
-def list_services(
-    company_id: Optional[int] = None,
-    db: Session = Depends(get_db)
-):
-    query = db.query(Service)
-    if company_id:
-        query = query.filter(Service.company_id == company_id)
-    services = query.all()
-    if not services:
-        raise HTTPException(status_code=404, detail="No services found.")
+def list_services(db: Session = Depends(get_db)):
+    """
+    Επιστροφή όλων των υπηρεσιών.
+    """
+    services = db.query(Service).all()
     return services
 
 @router.put("/{service_id}", response_model=ServiceResponse)
