@@ -11,7 +11,6 @@ import {
   useTheme,
 } from "@mui/material";
 
-// Dynamic backend URL (uses environment variable or default fallback)
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Services = () => {
@@ -28,10 +27,7 @@ const Services = () => {
 
   const fetchServices = async () => {
     try {
-      const companyId = 1; // Το ID της εταιρείας που θέλεις να φέρεις
-      const response = await axios.get(`${BACKEND_URL}/api/v1/services/`, {
-        params: { company_id: companyId },
-      });
+      const response = await axios.get(`${BACKEND_URL}/api/v1/services/?company_id=1`);
       setServices(response.data);
     } catch (error) {
       console.error("Error fetching services:", error.response?.data || error.message);
@@ -57,10 +53,7 @@ const Services = () => {
         );
         setEditingService(null);
       } else {
-        const response = await axios.post(
-          `${BACKEND_URL}/api/v1/services/`,
-          formData
-        );
+        const response = await axios.post(`${BACKEND_URL}/api/v1/services/`, formData);
         setServices((prev) => [...prev, response.data]);
       }
       setFormData({ name: "", description: "", price: "" });
@@ -122,9 +115,7 @@ const Services = () => {
                 fullWidth
                 type="number"
                 value={formData.price}
-                onChange={(e) =>
-                  setFormData({ ...formData, price: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
               />
             </Grid>
