@@ -33,13 +33,13 @@ const Services = () => {
 
   const fetchServices = useCallback(async () => {
     try {
-      const params = { ...filters };
-      if (!params.name) delete params.name;
-      if (!params.min_price) delete params.min_price;
-      if (!params.max_price) delete params.max_price;
-
       const response = await axios.get(`${BACKEND_URL}/api/v1/services/`, {
-        params,
+        params: {
+          company_id: filters.company_id,
+          name: filters.name || undefined,
+          min_price: filters.min_price || undefined,
+          max_price: filters.max_price || undefined,
+        },
       });
       setServices(response.data);
     } catch (error) {

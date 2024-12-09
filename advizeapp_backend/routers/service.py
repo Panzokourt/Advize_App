@@ -15,6 +15,11 @@ class ServiceCreate(BaseModel):
     description: Optional[str] = Field(None, example="Description of the service")
     price: float = Field(..., example=99.99)
 
+class ServiceUpdate(BaseModel):
+    name: Optional[str] = Field(None, example="Updated Service Name")
+    description: Optional[str] = Field(None, example="Updated description")
+    price: Optional[float] = Field(None, example=150.0)
+
 class ServiceResponse(BaseModel):
     id: int
     company_id: int
@@ -68,12 +73,37 @@ def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# PUT endpoint για ενημέρωση υπηρεσίας
+@router.put("/{service_id}", response_model=ServiceResponse)
+def update_service(service_id: int, service: ServiceUpdate, db: Session = Depends(get_db)):
+    try:
+        db_service = db.query(Service).filter(Service.id == service_id).first()
+        if not db_service:
+            raise HTTPException(status_code=404, detail="Service not found")
+
+        if service.name is not None:
+            db_service.name = service.name
+        if service.description is not None:
+            db_service.description = service.description
+        if service.price is not None:
+            db_service.price = service.price
+
+        db.commit()
+        db.refresh(db_service)
+        return db_service
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # DELETE endpoint για διαγραφή υπηρεσίας
 @router.delete("/{service_id}")
 def delete_service(service_id: int, db: Session = Depends(get_db)):
-    db_service = db.query(Service).filter(Service.id == service_id).first()
-    if not db_service:
-        raise HTTPException(status_code=404, detail="Service not found")
-    db.delete(db_service)
-    db.commit()
-    return {"message": "Service deleted successfully"}
+    try:
+        db_service = db.query(Service).filter(Service.id == service_id).first()
+        if not db_service:
+            raise HTTPException(status_code=404, detail="Service not found")
+
+        db.delete(db_service)
+        db.commit()
+        return {"message": "Service deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
