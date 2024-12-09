@@ -79,3 +79,11 @@ def delete_service(service_id: int, db: Session = Depends(get_db)):
     db.delete(db_service)
     db.commit()
     return {"message": "Service deleted successfully"}
+
+@router.get("/summary/")
+def service_summary(company_id: int, db: Session = Depends(get_db)):
+    """
+    Επιστρέφει το συνολικό αριθμό των υπηρεσιών για την εταιρεία.
+    """
+    total_services = db.query(Service).filter(Service.company_id == company_id).count()
+    return {"total_services": total_services}
