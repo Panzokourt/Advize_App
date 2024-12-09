@@ -30,15 +30,15 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-      const companyId = 1; // ή από state/authentication
-      const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`, {
-        params: { company_id: companyId },
-      });
-      setClients(response.data);
+        const companyId = 1; // ή δυναμικά από state / authentication
+        const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`, {
+            params: { company_id: companyId },
+        });
+        setClients(response.data);
     } catch (error) {
-      console.error("Error fetching clients:", error.response?.data || error.message);
+        console.error("Error fetching clients:", error.response?.data || error.message);
     }
-  };
+};
   
 
   useEffect(() => {

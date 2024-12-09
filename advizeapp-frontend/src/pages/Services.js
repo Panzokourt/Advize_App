@@ -1,65 +1,27 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Typography, Grid, Paper, CircularProgress } from "@mui/material";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 // Dynamic backend URL from environment variable or fallback
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
-const Dashboard = () => {
-  const [data, setData] = useState({
-    totalClients: 0,
-    totalTasks: 0,
-    totalServices: 0,
-    taskStatus: {},
-  });
-
+const Services = () => {
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchServices = async () => {
       try {
-        const [clients, tasks, services] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/v1/clients/summary/?company_id=1`),
-          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/?company_id=1`),
-          axios.get(`${BACKEND_URL}/api/v1/services/summary/?company_id=1`),
-        ]);
-        setData({
-          totalClients: clients.data.total_clients || 0,
-          totalTasks: tasks.data["In Progress"] || 0,
-          totalServices: services.data.total_services || 0,
-          taskStatus: tasks.data,
-        });
+        const response = await axios.get(`${BACKEND_URL}/api/v1/services/?company_id=1`);
+        setServices(response.data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching services:", err.response?.data || err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchServices();
   }, []);
-
-  const chartData = {
-    labels: Object.keys(data.taskStatus),
-    datasets: [
-      {
-        label: "Task Status",
-        data: Object.values(data.taskStatus),
-        backgroundColor: ["#3f51b5", "#f50057", "#00c853"],
-      },
-    ],
-  };
 
   return loading ? (
     <Grid container justifyContent="center" alignItems="center" style={{ height: "100vh" }}>
@@ -67,32 +29,22 @@ const Dashboard = () => {
     </Grid>
   ) : (
     <Grid container spacing={3} sx={{ marginTop: "10px" }}>
-      <Grid item xs={4}>
-        <Paper sx={{ padding: "20px", textAlign: "center" }}>
-          <Typography>Total Clients</Typography>
-          <Typography variant="h4">{data.totalClients}</Typography>
-        </Paper>
-      </Grid>
-      <Grid item xs={4}>
-        <Paper sx={{ padding: "20px", textAlign: "center" }}>
-          <Typography>Total Tasks</Typography>
-          <Typography variant="h4">{data.totalTasks}</Typography>
-        </Paper>
-      </Grid>
-      <Grid item xs={4}>
-        <Paper sx={{ padding: "20px", textAlign: "center" }}>
-          <Typography>Total Services</Typography>
-          <Typography variant="h4">{data.totalServices}</Typography>
-        </Paper>
-      </Grid>
       <Grid item xs={12}>
-        <Paper sx={{ padding: "20px" }}>
-          <Typography>Task Overview</Typography>
-          <Bar data={chartData} />
-        </Paper>
+        <Typography variant="h4" gutterBottom>
+          Services
+        </Typography>
       </Grid>
+      {services.map((service) => (
+        <Grid item xs={12} sm={6} md={4} key={service.id}>
+          <Paper sx={{ padding: "20px", textAlign: "center" }}>
+            <Typography variant="h6">{service.name}</Typography>
+            <Typography variant="body2">{service.description}</Typography>
+            <Typography variant="body2">Price: ${service.price.toFixed(2)}</Typography>
+          </Paper>
+        </Grid>
+      ))}
     </Grid>
   );
 };
 
-export default Dashboard;
+export default Services;
