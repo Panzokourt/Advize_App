@@ -28,7 +28,10 @@ const Services = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/v1/services/`);
+      const companyId = 1; // Το ID της εταιρείας που θέλεις να φέρεις
+      const response = await axios.get(`${BACKEND_URL}/api/v1/services/`, {
+        params: { company_id: companyId },
+      });
       setServices(response.data);
     } catch (error) {
       console.error("Error fetching services:", error.response?.data || error.message);

@@ -44,12 +44,15 @@ def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
     return new_service
 
 @router.get("/", response_model=List[ServiceResponse])
-def list_services(company_id: int, db: Session = Depends(get_db)):
+def list_services(company_id: Optional[int] = None, db: Session = Depends(get_db)):
     """
-    Επιστροφή όλων των υπηρεσιών για μια συγκεκριμένη εταιρεία.
+    Επιστροφή όλων των υπηρεσιών.
+    Αν το company_id δοθεί, επιστρέφει τις υπηρεσίες για την εταιρεία.
     """
-    services = db.query(Service).filter(Service.company_id == company_id).all()
-    return services
+    query = db.query(Service)
+    if company_id:
+        query = query.filter(Service.company_id == company_id)
+    return query.all()
 
 @router.put("/{service_id}", response_model=ServiceResponse)
 def update_service(service_id: int, service: ServiceCreate, db: Session = Depends(get_db)):
@@ -80,10 +83,3 @@ def delete_service(service_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Service deleted successfully"}
 
-@router.get("/summary/")
-def service_summary(company_id: int, db: Session = Depends(get_db)):
-    """
-    Επιστρέφει το συνολικό αριθμό των υπηρεσιών για την εταιρεία.
-    """
-    total_services = db.query(Service).filter(Service.company_id == company_id).count()
-    return {"total_services": total_services}
