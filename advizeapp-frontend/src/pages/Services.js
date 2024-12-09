@@ -11,7 +11,6 @@ import {
   useTheme,
 } from "@mui/material";
 
-// Dynamic backend URL (uses environment variable or default fallback)
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Services = () => {
@@ -21,32 +20,36 @@ const Services = () => {
     description: "",
     price: "",
   });
-  const [editingService, setEditingService] = useState(null);
   const [filters, setFilters] = useState({
     company_id: 1,
     name: "",
     min_price: "",
     max_price: "",
   });
+  const [editingService, setEditingService] = useState(null);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Fetch services with optional filters (Wrapped with useCallback)
   const fetchServices = useCallback(async () => {
     try {
+      const params = { ...filters };
+      if (!params.name) delete params.name;
+      if (!params.min_price) delete params.min_price;
+      if (!params.max_price) delete params.max_price;
+
       const response = await axios.get(`${BACKEND_URL}/api/v1/services/`, {
-        params: filters,
+        params,
       });
       setServices(response.data);
     } catch (error) {
       console.error("Error fetching services:", error.response?.data || error.message);
     }
-  }, [filters]); // Dependency array includes `filters`
+  }, [filters]);
 
   useEffect(() => {
     fetchServices();
-  }, [fetchServices]); // Include `fetchServices` in dependency array
+  }, [fetchServices]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,10 +66,10 @@ const Services = () => {
         );
         setEditingService(null);
       } else {
-        const response = await axios.post(
-          `${BACKEND_URL}/api/v1/services/`,
-          { ...formData, company_id: filters.company_id }
-        );
+        const response = await axios.post(`${BACKEND_URL}/api/v1/services/`, {
+          ...formData,
+          company_id: filters.company_id,
+        });
         setServices((prev) => [...prev, response.data]);
       }
       setFormData({ name: "", description: "", price: "" });
@@ -103,7 +106,6 @@ const Services = () => {
         Services
       </Typography>
 
-      {/* Filter Section */}
       <Paper sx={{ padding: isSmallScreen ? 1 : 2, marginBottom: 2 }}>
         <Typography variant="h6">Search Filters</Typography>
         <Grid container spacing={2}>
@@ -120,8 +122,8 @@ const Services = () => {
             <TextField
               label="Min Price"
               name="min_price"
-              fullWidth
               type="number"
+              fullWidth
               value={filters.min_price}
               onChange={handleFilterChange}
             />
@@ -130,8 +132,8 @@ const Services = () => {
             <TextField
               label="Max Price"
               name="max_price"
-              fullWidth
               type="number"
+              fullWidth
               value={filters.max_price}
               onChange={handleFilterChange}
             />
@@ -147,7 +149,6 @@ const Services = () => {
         </Button>
       </Paper>
 
-      {/* Add/Edit Service Section */}
       <Paper sx={{ padding: isSmallScreen ? 1 : 2, marginBottom: 2 }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -167,26 +168,23 @@ const Services = () => {
                 multiline
                 rows={3}
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 label="Price"
-                fullWidth
                 type="number"
+                fullWidth
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required
               />
             </Grid>
             <Grid item xs={12}>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                fullWidth={isSmallScreen}
-              >
+              <Button variant="contained" color="primary" type="submit" fullWidth={isSmallScreen}>
                 {editingService ? "Update Service" : "Add Service"}
               </Button>
             </Grid>
@@ -194,7 +192,6 @@ const Services = () => {
         </form>
       </Paper>
 
-      {/* Services List Section */}
       <Grid container spacing={isSmallScreen ? 1 : 2}>
         {services.map((service) => (
           <Grid item xs={12} sm={6} md={4} key={service.id}>
@@ -202,9 +199,7 @@ const Services = () => {
               <Typography variant="h6">{service.name}</Typography>
               <Typography variant="body2">{service.description}</Typography>
               <Typography variant="body2">Price: ${service.price.toFixed(2)}</Typography>
-              <Box
-                sx={{ marginTop: 1, textAlign: isSmallScreen ? "center" : "left" }}
-              >
+              <Box sx={{ marginTop: 1 }}>
                 <Button
                   variant="outlined"
                   color="secondary"
