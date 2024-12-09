@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, List
 
-router = APIRouter()
+router = APIRouter(tags=["services"])
 
 # Pydantic schema για validation
 class ServiceCreate(BaseModel):
@@ -37,13 +37,20 @@ def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
     db.refresh(new_service)
     return new_service
 
-@router.get("/", response_model=List[ServiceResponse])
-def list_services(db: Session = Depends(get_db)):
+@router.get("/services/", response_model=List[ServiceResponse])
+def list_services(
+    company_id: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
     """
-    Επιστροφή όλων των υπηρεσιών.
+    Επιστροφή όλων των υπηρεσιών με δυνατότητα φιλτραρίσματος ανά εταιρεία.
     """
-    services = db.query(Service).all()
-    return services
+    query = db.query(Service)
+    
+    if company_id:
+        query = query.filter(Service.company_id == company_id)
+    
+    return query.all()
 
 @router.put("/{service_id}", response_model=ServiceResponse)
 def update_service(service_id: int, service: ServiceCreate, db: Session = Depends(get_db)):

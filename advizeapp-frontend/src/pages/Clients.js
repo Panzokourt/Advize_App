@@ -11,10 +11,11 @@ import {
   useTheme,
 } from "@mui/material";
 
-// Δυναμικό URL για το backend (χρησιμοποιεί περιβαλλοντική μεταβλητή ή default fallback)
+// Dynamic backend URL (uses environment variable or default fallback)
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Clients = () => {
+  // State for clients and form data
   const [clients, setClients] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -22,26 +23,36 @@ const Clients = () => {
     vat_number: "",
     phone: "",
   });
-  const [editingClient, setEditingClient] = useState(null);
+  const [editingClient, setEditingClient] = useState(null); // To track editing
 
-  // Responsive Hook
+  const [filters, setFilters] = useState({
+    company_id: 1, // Default company ID
+    name: "",
+    email: "",
+    vat_number: "",
+  }); // Filters for search
+
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Small screen detection
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // Fetch clients with optional filters
   const fetchClients = async () => {
     try {
-        const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`)
-        setClients(response.data);
+      const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`, {
+        params: filters, // Apply search filters
+      });
+      setClients(response.data);
     } catch (error) {
-        console.error("Error fetching clients:", error.response?.data || error.message);
+      console.error("Error fetching clients:", error.response?.data || error.message);
     }
-};
-  
+  };
 
+  // Fetch clients on component mount and when filters change
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [filters]);
 
+  // Handle form submission for create/update
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -59,7 +70,7 @@ const Clients = () => {
       } else {
         const response = await axios.post(
           `${BACKEND_URL}/api/v1/clients/`,
-          formData
+          { ...formData, company_id: filters.company_id }
         );
         setClients((prev) => [...prev, response.data]);
       }
@@ -69,6 +80,7 @@ const Clients = () => {
     }
   };
 
+  // Edit a client
   const handleEdit = (client) => {
     setEditingClient(client);
     setFormData({
@@ -79,6 +91,7 @@ const Clients = () => {
     });
   };
 
+  // Delete a client
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${BACKEND_URL}/api/v1/clients/${id}`);
@@ -88,11 +101,60 @@ const Clients = () => {
     }
   };
 
+  // Handle filter changes
+  const handleFilterChange = (e) => {
+    setFilters({ ...filters, [e.target.name]: e.target.value });
+  };
+
   return (
     <Box sx={{ padding: isSmallScreen ? 1 : 2 }}>
       <Typography variant="h4" gutterBottom>
         Clients
       </Typography>
+
+      {/* Filter Section */}
+      <Paper sx={{ padding: isSmallScreen ? 1 : 2, marginBottom: 2 }}>
+        <Typography variant="h6">Search Filters</Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Name"
+              name="name"
+              fullWidth
+              value={filters.name}
+              onChange={handleFilterChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Email"
+              name="email"
+              fullWidth
+              value={filters.email}
+              onChange={handleFilterChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="VAT Number"
+              name="vat_number"
+              fullWidth
+              value={filters.vat_number}
+              onChange={handleFilterChange}
+            />
+          </Grid>
+        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={fetchClients}
+          sx={{ marginTop: 2 }}
+        >
+          Apply Filters
+        </Button>
+      </Paper>
+
+      {/* Add/Edit Client Section */}
       <Paper sx={{ padding: isSmallScreen ? 1 : 2, marginBottom: 2 }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -101,7 +163,9 @@ const Clients = () => {
                 label="Name"
                 fullWidth
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </Grid>
@@ -111,7 +175,9 @@ const Clients = () => {
                 fullWidth
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
               />
             </Grid>
@@ -138,13 +204,20 @@ const Clients = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" color="primary" type="submit" fullWidth={isSmallScreen}>
-                {editingClient ? "Update" : "Add"} Client
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullWidth={isSmallScreen}
+              >
+                {editingClient ? "Update Client" : "Add Client"}
               </Button>
             </Grid>
           </Grid>
         </form>
       </Paper>
+
+      {/* Clients List Section */}
       <Grid container spacing={isSmallScreen ? 1 : 2}>
         {clients.map((client) => (
           <Grid item xs={12} sm={6} md={4} key={client.id}>
@@ -153,7 +226,9 @@ const Clients = () => {
               <Typography variant="body2">{client.email}</Typography>
               <Typography variant="body2">VAT: {client.vat_number}</Typography>
               <Typography variant="body2">Phone: {client.phone}</Typography>
-              <Box sx={{ marginTop: 1, textAlign: isSmallScreen ? "center" : "left" }}>
+              <Box
+                sx={{ marginTop: 1, textAlign: isSmallScreen ? "center" : "left" }}
+              >
                 <Button
                   variant="outlined"
                   color="secondary"

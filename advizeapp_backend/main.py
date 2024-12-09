@@ -29,7 +29,7 @@ try:
     logger.info("Company router loaded successfully")
     app.include_router(employee.router, prefix="/api/v1")
     logger.info("Employee router loaded successfully")
-    app.include_router(client.router, tags=["clients"], prefix="/api/v1")
+    app.include_router(client.router, prefix="/api/v1")
     logger.info("Client router loaded successfully")
     app.include_router(task.router, prefix="/api/v1")
     logger.info("Task router loaded successfully")

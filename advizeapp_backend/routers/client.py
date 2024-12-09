@@ -1,15 +1,16 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
+from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 from advizeapp_backend.database import get_db
 from advizeapp_backend.models import Client
-from typing import List
 
 # Δημιουργία router
-router = APIRouter()
+router = APIRouter(prefix="/api/v1/clients", tags=["clients"])
 
 # Pydantic model για validation
 class ClientCreate(BaseModel):
+    company_id: int
     name: str
     email: EmailStr
     vat_number: str
@@ -18,6 +19,7 @@ class ClientCreate(BaseModel):
 # Pydantic model για response
 class ClientResponse(BaseModel):
     id: int
+    company_id: int
     name: str
     email: EmailStr
     vat_number: str
@@ -28,15 +30,32 @@ class ClientResponse(BaseModel):
 
 # Endpoint για επιστροφή όλων των πελατών
 @router.get("/", response_model=List[ClientResponse])
-def get_clients(company_id: int, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def get_clients(
+    company_id: Optional[int] = None,
+    name: Optional[str] = None,
+    email: Optional[str] = None,
+    vat_number: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
     """
-    Επιστρέφει τους πελάτες για μια συγκεκριμένη εταιρεία.
+    Επιστρέφει τους πελάτες με βάση τα φίλτρα.
     """
-    clients = db.query(Client).filter(Client.company_id == company_id).offset(skip).limit(limit).all()
-    if not clients:
-        raise HTTPException(status_code=404, detail="No clients found for this company")
-    return clients
+    query = db.query(Client)
 
+    if company_id:
+        query = query.filter(Client.company_id == company_id)
+    if name:
+        query = query.filter(Client.name.ilike(f"%{name}%"))
+    if email:
+        query = query.filter(Client.email.ilike(f"%{email}%"))
+    if vat_number:
+        query = query.filter(Client.vat_number.ilike(f"%{vat_number}%"))
+
+    clients = query.all()
+
+    if not clients:
+        raise HTTPException(status_code=404, detail="No clients found matching the criteria.")
+    return clients
 
 # Endpoint για δημιουργία νέου πελάτη
 @router.post("/", response_model=ClientResponse)
@@ -44,15 +63,22 @@ def create_client(client: ClientCreate, db: Session = Depends(get_db)):
     """
     Δημιουργεί έναν νέο πελάτη.
     """
-    existing_client = db.query(Client).filter(Client.email == client.email).first()
+    # Έλεγχος για διπλότυπα email ή VAT number
+    existing_client = db.query(Client).filter(
+        (Client.email == client.email) | (Client.vat_number == client.vat_number)
+    ).first()
     if existing_client:
-        raise HTTPException(status_code=400, detail="Client with this email already exists")
+        raise HTTPException(
+            status_code=400,
+            detail="A client with the same email or VAT number already exists.",
+        )
     
     new_client = Client(
+        company_id=client.company_id,
         name=client.name,
         email=client.email,
         vat_number=client.vat_number,
-        phone=client.phone
+        phone=client.phone,
     )
     db.add(new_client)
     db.commit()
@@ -67,12 +93,14 @@ def update_client(client_id: int, client: ClientCreate, db: Session = Depends(ge
     """
     db_client = db.query(Client).filter(Client.id == client_id).first()
     if not db_client:
-        raise HTTPException(status_code=404, detail="Client not found")
+        raise HTTPException(status_code=404, detail="Client not found.")
 
+    db_client.company_id = client.company_id
     db_client.name = client.name
     db_client.email = client.email
     db_client.vat_number = client.vat_number
     db_client.phone = client.phone
+
     db.commit()
     db.refresh(db_client)
     return db_client
@@ -85,7 +113,7 @@ def delete_client(client_id: int, db: Session = Depends(get_db)):
     """
     db_client = db.query(Client).filter(Client.id == client_id).first()
     if not db_client:
-        raise HTTPException(status_code=404, detail="Client not found")
+        raise HTTPException(status_code=404, detail="Client not found.")
 
     db.delete(db_client)
     db.commit()
