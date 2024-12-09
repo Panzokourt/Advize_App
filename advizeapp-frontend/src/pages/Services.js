@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
   TextField,
@@ -32,8 +32,8 @@ const Services = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Fetch services with optional filters
-  const fetchServices = async () => {
+  // Fetch services with optional filters (Wrapped with useCallback)
+  const fetchServices = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/v1/services/`, {
         params: filters,
@@ -42,13 +42,12 @@ const Services = () => {
     } catch (error) {
       console.error("Error fetching services:", error.response?.data || error.message);
     }
-  };
+  }, [filters]); // Dependency array includes `filters`
 
   useEffect(() => {
     fetchServices();
-  }, [filters]);
+  }, [fetchServices]); // Include `fetchServices` in dependency array
 
-  // Handle form submission for create/update
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -76,7 +75,6 @@ const Services = () => {
     }
   };
 
-  // Edit a service
   const handleEdit = (service) => {
     setEditingService(service);
     setFormData({
@@ -86,7 +84,6 @@ const Services = () => {
     });
   };
 
-  // Delete a service
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${BACKEND_URL}/api/v1/services/${id}`);
@@ -96,7 +93,6 @@ const Services = () => {
     }
   };
 
-  // Handle filter changes
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
