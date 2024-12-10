@@ -34,8 +34,7 @@ class ServiceResponse(BaseModel):
 def list_services(
     company_id: int,
     name: Optional[str] = None,
-    min_price: Optional[float] = None,
-    max_price: Optional[float] = None,
+    price: Optional[float] = None,
     db: Session = Depends(get_db),
 ):
     query = db.query(Service).filter(Service.company_id == company_id)
