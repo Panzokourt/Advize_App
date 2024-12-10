@@ -42,10 +42,8 @@ def list_services(
 
     if name:
         query = query.filter(Service.name.ilike(f"%{name}%"))
-    if min_price is not None:
-        query = query.filter(Service.price >= min_price)
-    if max_price is not None:
-        query = query.filter(Service.price <= max_price)
+    if price is not None:
+        query = query.filter(Service.price == price)
 
     services = query.all()
     return services

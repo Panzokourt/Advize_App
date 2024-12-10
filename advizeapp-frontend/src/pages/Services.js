@@ -25,8 +25,7 @@ const Services = () => {
   const [filters, setFilters] = useState({
     company_id: 1,
     name: "",
-    min_price: "",
-    max_price: "",
+    price: "",
   });
   
   const theme = useTheme();
