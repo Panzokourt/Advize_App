@@ -2,7 +2,7 @@
   base = "advizeapp-frontend"  # Το σωστό base directory
   command = "npm run build"    # Εντολή κατασκευής του frontend
   publish = "build"            # Ο φάκελος που δημιουργείται από την εντολή `npm run build`
-  
+  environment = { CI = "false" }
 
 [context.production.environment]
   REACT_APP_BACKEND_URL = "https://advizeapp-0bd9740bb742.herokuapp.com"
