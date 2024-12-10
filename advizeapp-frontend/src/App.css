@@ -1,24 +1,59 @@
-html, body, #root {
-  height: 100%;
+/* General styles */
+body {
   margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa; /* Light background for the app */
 }
 
-.navbar {
-  background-color: #f8f9fa;
-}
-
+/* Sidebar styles */
 .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
   height: 100%;
-  background-color: #343a40;
-  color: white;
-  padding: 20px;
+  background-color: #ffffff; /* White sidebar background */
+  border-right: 1px solid #ddd; /* Border for a cleaner look */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
-.footer {
-  background-color: #f1f1f1;
-  position: relative;
-  bottom: 0;
-  width: 100%;
+.sidebar .sidebar-link {
+  display: block;
+  padding: 10px 15px;
+  font-size: 16px;
+  color: #333; /* Dark gray text */
+  text-decoration: none;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.sidebar .sidebar-link:hover {
+  background-color: #f0f0f0; /* Light hover effect */
+  color: #0d6efd; /* Bootstrap primary blue for hover text */
+}
+
+/* Main content container */
+.content-container {
+  margin-left: 240px; /* Reserve space for the sidebar */
+  padding: 20px;
+  background-color: #ffffff; /* Main content background */
+  min-height: 100vh; /* Ensure content area covers the viewport */
+}
+
+/* Footer styles */
+footer {
   text-align: center;
-  padding: 10px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+  position: relative;
+}
+
+footer a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
