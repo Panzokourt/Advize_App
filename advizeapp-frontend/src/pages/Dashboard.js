@@ -43,6 +43,8 @@ const Dashboard = () => {
           totalTasks: tasks.data["In Progress"] || 0,
           totalServices: services.data.total_services || 0,
           taskStatus: tasks.data,
+          recentTasks: recentTasks.data || [], // Example of using the data
+          serviceRevenue: serviceRevenue.data.total_revenue || 0, // Example of using the data
         });
       } catch (err) {
         console.error("Error fetching data:", err);
