@@ -37,7 +37,7 @@ try:
     logger.info("Service router loaded successfully")
     app.include_router(auth.router)
     logger.info("Auth router loaded successfully")
-    app.include_router(dashboard.router)
+    app.include_router(dashboard.router, prefix="/api/v1")
     logger.info("Dashboard router loaded successfully")
 except Exception as e:
     logger.error(f"Error loading routers: {e}")
