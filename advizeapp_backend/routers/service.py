@@ -40,12 +40,16 @@ def list_services(
     query = db.query(Service).filter(Service.company_id == company_id)
 
     if name:
-        query = query.filter(Service.name.ilike(f"%{name}%"))
+        query = query.filter(Service.name.ilike(f"%{name}%"))  # Handle partial match
     if price is not None:
         query = query.filter(Service.price == price)
 
     services = query.all()
+
+    if not services:
+        raise HTTPException(status_code=404, detail="No services found")
     return services
+
 
 # POST endpoint για δημιουργία υπηρεσίας
 @router.post("/", response_model=ServiceResponse)

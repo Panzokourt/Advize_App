@@ -34,7 +34,11 @@ const Services = () => {
   const fetchServices = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/v1/services/`, {
-        params: filters, // Apply search filters
+        params: {
+          company_id: filters.company_id,
+          name: filters.name || undefined, // Send undefined if name is empty
+          price: filters.price || undefined, // Send undefined if price is empty
+        },
       });
       setServices(response.data);
     } catch (error) {
