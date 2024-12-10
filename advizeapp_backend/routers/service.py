@@ -6,7 +6,9 @@ from advizeapp_backend.database import get_db
 from advizeapp_backend.models import Service
 from pydantic import BaseModel, Field
 
+
 router = APIRouter(prefix="/api/v1/services", tags=["services"])
+
 
 # Pydantic schema για validation
 class ServiceCreate(BaseModel):
@@ -31,15 +33,22 @@ class ServiceResponse(BaseModel):
 @router.get("/", response_model=List[ServiceResponse])
 def list_services(
     company_id: int,
+    name: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
     db: Session = Depends(get_db),
 ):
-    try:
-        services = db.query(Service).filter(Service.company_id == company_id).all()
-        if not services:
-            raise HTTPException(status_code=404, detail="No services found for this company")
-        return services
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    query = db.query(Service).filter(Service.company_id == company_id)
+
+    if name:
+        query = query.filter(Service.name.ilike(f"%{name}%"))
+    if min_price is not None:
+        query = query.filter(Service.price >= min_price)
+    if max_price is not None:
+        query = query.filter(Service.price <= max_price)
+
+    services = query.all()
+    return services
 
 # POST endpoint για δημιουργία υπηρεσίας
 @router.post("/", response_model=ServiceResponse)
@@ -50,7 +59,10 @@ def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
             name=service.name,
             description=service.description,
             price=service.price,
+            created_at=datetime.utcnow(),  # Explicitly set datetime
+            updated_at=datetime.utcnow(),  # Explicitly set datetime
         )
+
         db.add(new_service)
         db.commit()
         db.refresh(new_service)
@@ -87,3 +99,4 @@ def delete_service(service_id: int, db: Session = Depends(get_db)):
         return {"message": "Service deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+

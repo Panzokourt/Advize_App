@@ -20,26 +20,22 @@ const Services = () => {
     description: "",
     price: "",
   });
+  const [editingService, setEditingService] = useState(null);
+
   const [filters, setFilters] = useState({
     company_id: 1,
     name: "",
     min_price: "",
     max_price: "",
   });
-  const [editingService, setEditingService] = useState(null);
-
+  
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const fetchServices = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/v1/services/`, {
-        params: {
-          company_id: filters.company_id,
-          name: filters.name || undefined,
-          min_price: filters.min_price || undefined,
-          max_price: filters.max_price || undefined,
-        },
+        params: filters, // Apply search filters
       });
       setServices(response.data);
     } catch (error) {

@@ -77,7 +77,7 @@ class Service(Base):
     description = Column(Text)
     price = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     company = relationship("Company", back_populates="services")  # Προσθήκη back_populates
 
