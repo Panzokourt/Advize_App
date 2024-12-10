@@ -14,7 +14,6 @@ import {
 // Register Chart.js components
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-// Δυναμικό URL για το backend (χρησιμοποιεί περιβαλλοντική μεταβλητή ή default fallback)
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Dashboard = () => {
@@ -24,20 +23,21 @@ const Dashboard = () => {
     totalServices: 0,
     taskStatus: {},
   });
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      const companyId = 1; // Replace with dynamic company ID if needed
       try {
-        const [clients, tasks, services] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/v1/clients/summary/`),
-          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/`),
-          axios.get(`${BACKEND_URL}/api/v1/services/summary/`),
-          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary-by-date/`),
-          axios.get(`${BACKEND_URL}/api/v1/tasks/recent-completions/`),
-          axios.get(`${BACKEND_URL}/api/v1/services/revenue-summary/`),
+        const [clients, tasks, services, taskDateSummary, recentTasks, serviceRevenue] = await Promise.all([
+          axios.get(`${BACKEND_URL}/api/v1/clients/summary/`, { params: { company_id: companyId } }),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/`, { params: { company_id: companyId } }),
+          axios.get(`${BACKEND_URL}/api/v1/services/summary/`, { params: { company_id: companyId } }),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary-by-date/`, { params: { company_id: companyId } }),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/recent-completions/`, { params: { company_id: companyId } }),
+          axios.get(`${BACKEND_URL}/api/v1/services/revenue-summary/`, { params: { company_id: companyId } }),
         ]);
+
         setData({
           totalClients: clients.data.total_clients || 0,
           totalTasks: tasks.data["In Progress"] || 0,
@@ -45,11 +45,12 @@ const Dashboard = () => {
           taskStatus: tasks.data,
         });
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
