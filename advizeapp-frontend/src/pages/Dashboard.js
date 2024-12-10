@@ -14,56 +14,43 @@ import {
 // Register Chart.js components
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const BACKEND_URL =
-  process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     totalClients: 0,
     totalTasks: 0,
     totalServices: 0,
+    totalRevenue: 0,
     taskStatus: {},
-    recentTasks: [],
-    serviceRevenue: 0,
   });
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const companyId = 1; // Default company_id, αν υπάρχει ανάγκη μπορεί να γίνει δυναμικό
+    const fetchDashboardData = async () => {
       try {
-        const [clientsRes, tasksRes, servicesRes, revenueRes] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/v1/clients/summary/`, {
-            params: { company_id: companyId },
-          }),
-          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/`, {
-            params: { company_id: companyId },
-          }),
-          axios.get(`${BACKEND_URL}/api/v1/services/summary/`, {
-            params: { company_id: companyId },
-          }),
-          axios.get(`${BACKEND_URL}/api/v1/services/revenue-summary/`, {
-            params: { company_id: companyId },
-          }),
+        const [clientsRes, tasksRes, servicesRes] = await Promise.all([
+          axios.get(`${BACKEND_URL}/api/v1/dashboard/clients/summary/`),
+          axios.get(`${BACKEND_URL}/api/v1/dashboard/tasks/status-summary/`),
+          axios.get(`${BACKEND_URL}/api/v1/dashboard/services/summary/`),
         ]);
 
         setDashboardData({
           totalClients: clientsRes.data.total_clients || 0,
-          totalTasks: tasksRes.data["In Progress"] || 0,
+          totalTasks: Object.values(tasksRes.data).reduce((a, b) => a + b, 0),
           totalServices: servicesRes.data.total_services || 0,
-          taskStatus: tasksRes.data,
-          recentTasks: [],
-          serviceRevenue: revenueRes.data.total_revenue || 0,
+          totalRevenue: servicesRes.data.total_cost || 0,
+          taskStatus: tasksRes.data || {},
         });
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err.response?.data || err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchDashboardData();
   }, []);
 
   const chartData = {
@@ -78,40 +65,33 @@ const Dashboard = () => {
   };
 
   return loading ? (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      style={{ height: "100vh" }}
-    >
+    <Grid container justifyContent="center" alignItems="center" style={{ height: "100vh" }}>
       <CircularProgress />
     </Grid>
   ) : (
     <Grid container spacing={3} sx={{ marginTop: "10px" }}>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Total Clients</Typography>
           <Typography variant="h4">{dashboardData.totalClients}</Typography>
         </Paper>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Total Tasks</Typography>
           <Typography variant="h4">{dashboardData.totalTasks}</Typography>
         </Paper>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Total Services</Typography>
           <Typography variant="h4">{dashboardData.totalServices}</Typography>
         </Paper>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Service Revenue</Typography>
-          <Typography variant="h4">
-            ${dashboardData.serviceRevenue.toFixed(2)}
-          </Typography>
+          <Typography variant="h4">${dashboardData.totalRevenue.toFixed(2)}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={12}>
