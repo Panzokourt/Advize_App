@@ -18,66 +18,60 @@ const BACKEND_URL =
   process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Dashboard = () => {
-  const [data, setData] = useState({
+  const [dashboardData, setDashboardData] = useState({
     totalClients: 0,
     totalTasks: 0,
     totalServices: 0,
     taskStatus: {},
-    taskDateSummary: {},
+    recentTasks: [],
+    serviceRevenue: 0,
   });
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const companyId = 1; // Example company ID
+      const companyId = 1; // Default company_id, αν υπάρχει ανάγκη μπορεί να γίνει δυναμικό
       try {
-        const [clients, tasks, services, taskDateSummary, recentTasks, serviceRevenue] =
-          await Promise.all([
-            axios.get(`${BACKEND_URL}/api/v1/clients/summary/`, {
-              params: { company_id: companyId },
-            }),
-            axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/`, {
-              params: { company_id: companyId },
-            }),
-            axios.get(`${BACKEND_URL}/api/v1/services/summary/`, {
-              params: { company_id: companyId },
-            }),
-            axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary-by-date/`, {
-              params: { company_id: companyId },
-            }),
-            axios.get(`${BACKEND_URL}/api/v1/tasks/recent-completions/`, {
-              params: { company_id: companyId },
-            }),
-            axios.get(`${BACKEND_URL}/api/v1/services/revenue-summary/`, {
-              params: { company_id: companyId },
-            }),
-          ]);
+        const [clientsRes, tasksRes, servicesRes, revenueRes] = await Promise.all([
+          axios.get(`${BACKEND_URL}/api/v1/clients/summary/`, {
+            params: { company_id: companyId },
+          }),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/`, {
+            params: { company_id: companyId },
+          }),
+          axios.get(`${BACKEND_URL}/api/v1/services/summary/`, {
+            params: { company_id: companyId },
+          }),
+          axios.get(`${BACKEND_URL}/api/v1/services/revenue-summary/`, {
+            params: { company_id: companyId },
+          }),
+        ]);
 
-        setData({
-          totalClients: clients.data.total_clients || 0,
-          totalTasks: tasks.data["In Progress"] || 0,
-          totalServices: services.data.total_services || 0,
-          taskStatus: tasks.data,
-          taskDateSummary: taskDateSummary.data,
-          recentTasks: recentTasks.data,
-          serviceRevenue: serviceRevenue.data.total_revenue || 0,
+        setDashboardData({
+          totalClients: clientsRes.data.total_clients || 0,
+          totalTasks: tasksRes.data["In Progress"] || 0,
+          totalServices: servicesRes.data.total_services || 0,
+          taskStatus: tasksRes.data,
+          recentTasks: [],
+          serviceRevenue: revenueRes.data.total_revenue || 0,
         });
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
   const chartData = {
-    labels: Object.keys(data.taskStatus),
+    labels: Object.keys(dashboardData.taskStatus),
     datasets: [
       {
         label: "Task Status",
-        data: Object.values(data.taskStatus),
+        data: Object.values(dashboardData.taskStatus),
         backgroundColor: ["#3f51b5", "#f50057", "#00c853"],
       },
     ],
@@ -97,37 +91,33 @@ const Dashboard = () => {
       <Grid item xs={4}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Total Clients</Typography>
-          <Typography variant="h4">{data.totalClients}</Typography>
+          <Typography variant="h4">{dashboardData.totalClients}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={4}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Total Tasks</Typography>
-          <Typography variant="h4">{data.totalTasks}</Typography>
+          <Typography variant="h4">{dashboardData.totalTasks}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={4}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Total Services</Typography>
-          <Typography variant="h4">{data.totalServices}</Typography>
+          <Typography variant="h4">{dashboardData.totalServices}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={4}>
         <Paper sx={{ padding: "20px", textAlign: "center" }}>
           <Typography>Service Revenue</Typography>
-          <Typography variant="h4">${data.serviceRevenue.toFixed(2)}</Typography>
+          <Typography variant="h4">
+            ${dashboardData.serviceRevenue.toFixed(2)}
+          </Typography>
         </Paper>
       </Grid>
       <Grid item xs={12}>
         <Paper sx={{ padding: "20px" }}>
-          <Typography>Task Overview</Typography>
+          <Typography>Task Status Overview</Typography>
           <Bar data={chartData} />
-        </Paper>
-      </Grid>
-      <Grid item xs={12}>
-        <Paper sx={{ padding: "20px" }}>
-          <Typography>Task Date Summary</Typography>
-          <pre>{JSON.stringify(data.taskDateSummary, null, 2)}</pre>
         </Paper>
       </Grid>
     </Grid>
