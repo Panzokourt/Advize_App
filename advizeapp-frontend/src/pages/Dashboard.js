@@ -1,106 +1,77 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Typography, Grid, Paper, CircularProgress } from "@mui/material";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState({
+  const [data, setData] = useState({
     totalClients: 0,
     totalTasks: 0,
     totalServices: 0,
-    totalRevenue: 0,
-    taskStatus: {},
   });
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchData = async () => {
       try {
-        const [clientsRes, tasksRes, servicesRes] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/v1/dashboard/clients/summary/`),
-          axios.get(`${BACKEND_URL}/api/v1/dashboard/tasks/status-summary/`),
-          axios.get(`${BACKEND_URL}/api/v1/dashboard/services/summary/`),
+        const [clients, tasks, services] = await Promise.all([
+          axios.get(`${BACKEND_URL}/api/v1/clients/summary/?company_id=1`),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/?company_id=1`),
+          axios.get(`${BACKEND_URL}/api/v1/services/summary/?company_id=1`),
         ]);
 
-        setDashboardData({
-          totalClients: clientsRes.data.total_clients || 0,
-          totalTasks: Object.values(tasksRes.data).reduce((a, b) => a + b, 0),
-          totalServices: servicesRes.data.total_services || 0,
-          totalRevenue: servicesRes.data.total_cost || 0,
-          taskStatus: tasksRes.data || {},
+        setData({
+          totalClients: clients.data.total_clients || 0,
+          totalTasks: tasks.data["In Progress"] || 0,
+          totalServices: services.data.total_services || 0,
         });
       } catch (err) {
-        console.error("Error fetching dashboard data:", err.response?.data || err.message);
+        console.error("Error fetching dashboard data:", err.message);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchDashboardData();
+    fetchData();
   }, []);
 
-  const chartData = {
-    labels: Object.keys(dashboardData.taskStatus),
-    datasets: [
-      {
-        label: "Task Status",
-        data: Object.values(dashboardData.taskStatus),
-        backgroundColor: ["#3f51b5", "#f50057", "#00c853"],
-      },
-    ],
-  };
-
-  return loading ? (
-    <Grid container justifyContent="center" alignItems="center" style={{ height: "100vh" }}>
-      <CircularProgress />
-    </Grid>
-  ) : (
-    <Grid container spacing={3} sx={{ marginTop: "10px" }}>
-      <Grid item xs={3}>
-        <Paper sx={{ padding: "20px", textAlign: "center" }}>
-          <Typography>Total Clients</Typography>
-          <Typography variant="h4">{dashboardData.totalClients}</Typography>
-        </Paper>
-      </Grid>
-      <Grid item xs={3}>
-        <Paper sx={{ padding: "20px", textAlign: "center" }}>
-          <Typography>Total Tasks</Typography>
-          <Typography variant="h4">{dashboardData.totalTasks}</Typography>
-        </Paper>
-      </Grid>
-      <Grid item xs={3}>
-        <Paper sx={{ padding: "20px", textAlign: "center" }}>
-          <Typography>Total Services</Typography>
-          <Typography variant="h4">{dashboardData.totalServices}</Typography>
-        </Paper>
-      </Grid>
-      <Grid item xs={3}>
-        <Paper sx={{ padding: "20px", textAlign: "center" }}>
-          <Typography>Service Revenue</Typography>
-          <Typography variant="h4">${dashboardData.totalRevenue.toFixed(2)}</Typography>
-        </Paper>
-      </Grid>
-      <Grid item xs={12}>
-        <Paper sx={{ padding: "20px" }}>
-          <Typography>Task Status Overview</Typography>
-          <Bar data={chartData} />
-        </Paper>
-      </Grid>
-    </Grid>
+  return (
+    <Container>
+      <h1 className="my-4">Dashboard</h1>
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center" style={{ height: "50vh" }}>
+          <Spinner animation="border" />
+        </div>
+      ) : (
+        <Row className="g-4">
+          <Col md={4}>
+            <Card className="text-center">
+              <Card.Body>
+                <Card.Title>Total Clients</Card.Title>
+                <Card.Text as="h3">{data.totalClients}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="text-center">
+              <Card.Body>
+                <Card.Title>Total Tasks</Card.Title>
+                <Card.Text as="h3">{data.totalTasks}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="text-center">
+              <Card.Body>
+                <Card.Title>Total Services</Card.Title>
+                <Card.Text as="h3">{data.totalServices}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      )}
+    </Container>
   );
 };
 

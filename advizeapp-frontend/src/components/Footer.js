@@ -1,24 +1,13 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
 
-const Footer = () => {
+const Header = () => {
   return (
-    <Box
-      sx={{
-        bgcolor: "#6200ea",
-        color: "#fff",
-        textAlign: "center",
-        padding: "8px",
-        position: "absolute",
-        bottom: 0,
-        width: "100%",
-      }}
-    >
-      <Typography variant="body2">
-        © {new Date().getFullYear()} AdvizeApp. All Rights Reserved.
-      </Typography>
-    </Box>
+    <nav className="navbar navbar-dark bg-primary">
+      <div className="container-fluid">
+        <span className="navbar-brand mb-0 h1">AdvizeApp</span>
+      </div>
+    </nav>
   );
 };
 
-export default Footer;
+export default Header;
