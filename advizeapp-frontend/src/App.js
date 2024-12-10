@@ -8,23 +8,18 @@ import Tasks from "./pages/Tasks";
 
 const App = () => {
   return (
-    <div id="root">
-      <Router>
+    <Router>
+      <div id="root" className="app-container">
         <Layout>
-          <div className="content">
-            <Routes>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/tasks" element={<Tasks />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/tasks" element={<Tasks />} />
+          </Routes>
         </Layout>
-        <footer>
-          <p>© 2024 AdvizeApp. All Rights Reserved.</p>
-        </footer>
-      </Router>
-    </div>
+      </div>
+    </Router>
   );
 };
 

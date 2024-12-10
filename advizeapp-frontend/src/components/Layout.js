@@ -6,10 +6,10 @@ import Footer from "./Footer";
 
 const Layout = ({ children }) => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <CssBaseline />
       <Header />
-      <Box sx={{ display: "flex", flexGrow: 1 }}>
+      <Box sx={{ display: "flex", flexGrow: 1, position: "relative" }}>
         <Sidebar />
         <Box
           component="main"
@@ -17,8 +17,9 @@ const Layout = ({ children }) => {
             flexGrow: 1,
             padding: "24px",
             backgroundColor: "#f5f5f5",
-            marginTop: "64px",
-            minHeight: "calc(100vh - 64px)",
+            marginTop: "64px", // Adjust for Header height
+            minHeight: "calc(100vh - 128px)", // Adjust for Header + Footer height
+            overflow: "auto",
           }}
         >
           {children}

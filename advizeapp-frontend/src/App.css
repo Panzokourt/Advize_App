@@ -1,28 +1,27 @@
-/* Εφαρμογή σε όλη τη σελίδα */
-html, body {
-  height: 100%;
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 
-#root {
+.App {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Κύριο περιεχόμενο */
-.content {
-  flex: 1; /* Εξασφαλίζει ότι το περιεχόμενο γεμίζει τον διαθέσιμο χώρο */
+.App-content {
+  flex-grow: 1;
 }
 
-/* Footer */
 footer {
-  background-color: #4a148c; /* Σκούρο μωβ χρώμα */
-  color: white; /* Λευκό χρώμα κειμένου */
+  background-color: #6200ea;
+  color: white;
   text-align: center;
   padding: 10px 0;
-  width: 100%;
   position: relative;
   bottom: 0;
+  width: 100%;
 }

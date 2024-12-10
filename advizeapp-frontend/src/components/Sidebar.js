@@ -33,6 +33,9 @@ const Sidebar = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: "border-box",
+          top: "64px", // Adjust for Header height
+          height: "calc(100% - 64px)", // Prevent overlapping the Footer
+          overflow: "auto",
         },
       }}
     >
