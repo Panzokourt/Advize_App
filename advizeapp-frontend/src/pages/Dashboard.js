@@ -34,6 +34,9 @@ const Dashboard = () => {
           axios.get(`${BACKEND_URL}/api/v1/clients/summary/`),
           axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary/`),
           axios.get(`${BACKEND_URL}/api/v1/services/summary/`),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/status-summary-by-date/`),
+          axios.get(`${BACKEND_URL}/api/v1/tasks/recent-completions/`),
+          axios.get(`${BACKEND_URL}/api/v1/services/revenue-summary/`),
         ]);
         setData({
           totalClients: clients.data.total_clients || 0,

@@ -5,7 +5,7 @@ from advizeapp_backend.database import get_db
 from advizeapp_backend.models import Task, Service, Client
 from datetime import datetime, timedelta
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
 
 # Summary των εργασιών ανά κατάσταση
 @router.get("/tasks/status-summary/")
