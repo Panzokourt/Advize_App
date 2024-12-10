@@ -1,7 +1,7 @@
 [build]
-  base = "advizeapp-frontend"  # Το σωστό base directory
-  command = "npm run build"    # Εντολή κατασκευής του frontend
-  publish = "build"            # Ο φάκελος που δημιουργείται από την εντολή `npm run build`
+  base = "advizeapp-frontend"
+  command = "npm run build"
+  publish = "build"
   environment = { CI = "false" }
 
 [context.production.environment]
