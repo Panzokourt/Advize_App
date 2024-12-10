@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
 
 # Summary των εργασιών ανά κατάσταση
-@router.get("/tasks/status-summary/")
+@router.get("/api/v1/tasks/status-summary/")
 def task_status_summary(company_id: int, db: Session = Depends(get_db)):
     """
     Επιστρέφει το σύνολο των εργασιών ανά κατάσταση για μια εταιρεία.
@@ -26,7 +26,7 @@ def task_status_summary(company_id: int, db: Session = Depends(get_db)):
     return status_counts
 
 # Summary υπηρεσιών
-@router.get("/services/summary/")
+@router.get("/api/v1/services/summary/")
 def services_summary(company_id: int, db: Session = Depends(get_db)):
     """
     Επιστρέφει το σύνολο των υπηρεσιών και το συνολικό κόστος για μια εταιρεία.
@@ -40,7 +40,7 @@ def services_summary(company_id: int, db: Session = Depends(get_db)):
     }
 
 # Summary πελατών
-@router.get("/clients/summary/")
+@router.get("/api/v1/clients/summary/")
 def clients_summary(company_id: int, db: Session = Depends(get_db)):
     """
     Επιστρέφει το σύνολο των πελατών για μια εταιρεία.
@@ -52,7 +52,7 @@ def clients_summary(company_id: int, db: Session = Depends(get_db)):
     }
 
 # Summary εργασιών ανά κατάσταση και χρονική περίοδο
-@router.get("/tasks/status-summary-by-date/")
+@router.get("/api/v1/tasks/status-summary-by-date/")
 def task_status_summary_by_date(
     company_id: int,
     start_date: datetime,
@@ -75,7 +75,7 @@ def task_status_summary_by_date(
     return {status: count for status, count in statuses}
 
 # Πρόσφατες ολοκληρωμένες εργασίες
-@router.get("/tasks/recent-completions/")
+@router.get("/api/v1/tasks/recent-completions/")
 def recent_task_completions(company_id: int, days: int = 7, db: Session = Depends(get_db)):
     """
     Επιστρέφει τις εργασίες που ολοκληρώθηκαν τις τελευταίες 'days' ημέρες.
@@ -92,7 +92,7 @@ def recent_task_completions(company_id: int, days: int = 7, db: Session = Depend
     return completed_tasks
 
 # Σύνολο εσόδων από υπηρεσίες
-@router.get("/services/revenue-summary/")
+@router.get("/api/v1/services/revenue-summary/")
 def service_revenue_summary(
     company_id: int,
     start_date: datetime,
