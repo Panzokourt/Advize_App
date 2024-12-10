@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Table, Button, Modal, Form } from "react-bootstrap";
+import { Container, Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", vat_number: "", phone: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", vat: "", phone: "" });
   const [editingClient, setEditingClient] = useState(null);
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/v1/clients/`);
+      const response = await axios.get(`${BACKEND_URL}/api/v1/clients/?company_id=1`);
       setClients(response.data);
     } catch (error) {
       console.error("Error fetching clients:", error.message);
@@ -29,9 +29,9 @@ const Clients = () => {
       if (editingClient) {
         await axios.put(`${BACKEND_URL}/api/v1/clients/${editingClient.id}`, formData);
       } else {
-        await axios.post(`${BACKEND_URL}/api/v1/clients/`, formData);
+        await axios.post(`${BACKEND_URL}/api/v1/clients/`, { ...formData, company_id: 1 });
       }
-      setFormData({ name: "", email: "", vat_number: "", phone: "" });
+      setFormData({ name: "", email: "", vat: "", phone: "" });
       setEditingClient(null);
       setShowModal(false);
       fetchClients();
@@ -56,41 +56,46 @@ const Clients = () => {
   };
 
   return (
-    <Container>
-      <h1 className="mt-4">Clients</h1>
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Add Client
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>VAT Number</th>
-            <th>Phone</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clients.map((client) => (
-            <tr key={client.id}>
-              <td>{client.name}</td>
-              <td>{client.email}</td>
-              <td>{client.vat_number}</td>
-              <td>{client.phone}</td>
-              <td>
-                <Button variant="warning" onClick={() => handleEdit(client)} className="me-2">
-                  Edit
-                </Button>
-                <Button variant="danger" onClick={() => handleDelete(client.id)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container fluid>
+      <Row className="mt-4">
+        <Col>
+          <h2>Clients</h2>
+          <Button variant="primary" className="mb-3" onClick={() => setShowModal(true)}>
+            Add Client
+          </Button>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>VAT Number</th>
+                <th>Phone</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {clients.map((client) => (
+                <tr key={client.id}>
+                  <td>{client.name}</td>
+                  <td>{client.email}</td>
+                  <td>{client.vat}</td>
+                  <td>{client.phone}</td>
+                  <td>
+                    <Button variant="warning" onClick={() => handleEdit(client)} className="me-2">
+                      Edit
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDelete(client.id)}>
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
 
+      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{editingClient ? "Edit Client" : "Add Client"}</Modal.Title>
@@ -119,9 +124,8 @@ const Clients = () => {
               <Form.Label>VAT Number</Form.Label>
               <Form.Control
                 type="text"
-                value={formData.vat_number}
-                onChange={(e) => setFormData({ ...formData, vat_number: e.target.value })}
-                required
+                value={formData.vat}
+                onChange={(e) => setFormData({ ...formData, vat: e.target.value })}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -130,7 +134,6 @@ const Clients = () => {
                 type="text"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
               />
             </Form.Group>
             <Button type="submit" variant="primary">

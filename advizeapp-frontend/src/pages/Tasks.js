@@ -1,106 +1,123 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Table, Button, Modal, Form } from "react-bootstrap";
+import { Container, Row, Col, Button, Table, Modal, Form } from "react-bootstrap";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
-const tasks = () => {
-  const [tasks, settasks] = useState([]);
+const Tasks = () => {
+  const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: "", description: "", price: "" });
-  const [editingService, setEditingService] = useState(null);
+  const [formData, setFormData] = useState({ title: "", description: "", status: "Pending" });
+  const [editingTask, setEditingTask] = useState(null);
 
-  const fetchtasks = async () => {
+  const fetchTasks = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/v1/tasks/?company_id=1`);
-      settasks(response.data);
+      setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error.message);
     }
   };
 
   useEffect(() => {
-    fetchtasks();
+    fetchTasks();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingService) {
-        await axios.put(`${BACKEND_URL}/api/v1/tasks/${editingService.id}`, formData);
+      if (editingTask) {
+        await axios.put(`${BACKEND_URL}/api/v1/tasks/${editingTask.id}`, formData);
       } else {
         await axios.post(`${BACKEND_URL}/api/v1/tasks/`, { ...formData, company_id: 1 });
       }
-      setFormData({ name: "", description: "", price: "" });
-      setEditingService(null);
+      setFormData({ title: "", description: "", status: "Pending" });
+      setEditingTask(null);
       setShowModal(false);
-      fetchtasks();
+      fetchTasks();
     } catch (error) {
-      console.error("Error saving service:", error.message);
+      console.error("Error saving task:", error.message);
     }
   };
 
-  const handleEdit = (service) => {
-    setFormData(service);
-    setEditingService(service);
+  const handleEdit = (task) => {
+    setFormData(task);
+    setEditingTask(task);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${BACKEND_URL}/api/v1/tasks/${id}`);
-      fetchtasks();
+      fetchTasks();
     } catch (error) {
-      console.error("Error deleting service:", error.message);
+      console.error("Error deleting task:", error.message);
     }
   };
 
   return (
-    <Container>
-      <h1 className="my-4">tasks</h1>
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Add Service
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tasks.map((service) => (
-            <tr key={service.id}>
-              <td>{service.name}</td>
-              <td>{service.description}</td>
-              <td>${service.price.toFixed(2)}</td>
-              <td>
-                <Button variant="warning" onClick={() => handleEdit(service)} className="me-2">
-                  Edit
-                </Button>
-                <Button variant="danger" onClick={() => handleDelete(service.id)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container fluid>
+      <Row className="mt-4">
+        <Col>
+          <h2>Tasks</h2>
+          <Button variant="primary" className="mb-3" onClick={() => setShowModal(true)}>
+            Add Task
+          </Button>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((task) => (
+                <tr key={task.id}>
+                  <td>{task.title}</td>
+                  <td>{task.description}</td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        task.status === "Completed"
+                          ? "bg-success"
+                          : task.status === "In Progress"
+                          ? "bg-warning"
+                          : "bg-secondary"
+                      }`}
+                    >
+                      {task.status}
+                    </span>
+                  </td>
+                  <td>
+                    <Button variant="warning" onClick={() => handleEdit(task)} className="me-2">
+                      Edit
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDelete(task.id)}>
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
 
+      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{editingService ? "Edit Service" : "Add Service"}</Modal.Title>
+          <Modal.Title>{editingTask ? "Edit Task" : "Add Task"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Title</Form.Label>
               <Form.Control
                 type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
               />
             </Form.Group>
@@ -108,22 +125,24 @@ const tasks = () => {
               <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Price</Form.Label>
-              <Form.Control
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              <Form.Label>Status</Form.Label>
+              <Form.Select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 required
-              />
+              >
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </Form.Select>
             </Form.Group>
             <Button type="submit" variant="primary">
-              {editingService ? "Update Service" : "Add Service"}
+              {editingTask ? "Update Task" : "Add Task"}
             </Button>
           </Form>
         </Modal.Body>
@@ -132,4 +151,4 @@ const tasks = () => {
   );
 };
 
-export default tasks;
+export default Tasks;

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Table, Button, Modal, Form } from "react-bootstrap";
+import { Container, Row, Col, Button, Table, Modal, Form } from "react-bootstrap";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
 
@@ -56,39 +56,44 @@ const Services = () => {
   };
 
   return (
-    <Container>
-      <h1 className="my-4">Services</h1>
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Add Service
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {services.map((service) => (
-            <tr key={service.id}>
-              <td>{service.name}</td>
-              <td>{service.description}</td>
-              <td>${service.price.toFixed(2)}</td>
-              <td>
-                <Button variant="warning" onClick={() => handleEdit(service)} className="me-2">
-                  Edit
-                </Button>
-                <Button variant="danger" onClick={() => handleDelete(service.id)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+    <Container fluid>
+      <Row className="mt-4">
+        <Col>
+          <h2>Services</h2>
+          <Button variant="primary" className="mb-3" onClick={() => setShowModal(true)}>
+            Add Service
+          </Button>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {services.map((service) => (
+                <tr key={service.id}>
+                  <td>{service.name}</td>
+                  <td>{service.description}</td>
+                  <td>${service.price.toFixed(2)}</td>
+                  <td>
+                    <Button variant="warning" onClick={() => handleEdit(service)} className="me-2">
+                      Edit
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDelete(service.id)}>
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
 
+      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{editingService ? "Edit Service" : "Add Service"}</Modal.Title>
@@ -108,7 +113,6 @@ const Services = () => {
               <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
