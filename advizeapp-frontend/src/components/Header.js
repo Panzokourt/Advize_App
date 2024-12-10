@@ -1,12 +1,13 @@
 import React from "react";
+import { Navbar, Container } from "react-bootstrap";
 
 const Header = () => {
   return (
-    <nav className="navbar navbar-dark bg-primary">
-      <div className="container-fluid">
-        <span className="navbar-brand mb-0 h1">AdvizeApp</span>
-      </div>
-    </nav>
+    <Navbar bg="light" expand="lg">
+      <Container>
+        <Navbar.Brand href="/">AdvizeApp</Navbar.Brand>
+      </Container>
+    </Navbar>
   );
 };
 

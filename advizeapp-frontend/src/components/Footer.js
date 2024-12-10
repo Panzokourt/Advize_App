@@ -1,13 +1,11 @@
 import React from "react";
 
-const Header = () => {
+const Footer = () => {
   return (
-    <nav className="navbar navbar-dark bg-primary">
-      <div className="container-fluid">
-        <span className="navbar-brand mb-0 h1">AdvizeApp</span>
-      </div>
-    </nav>
+    <footer className="footer">
+      <p>© 2024 AdvizeApp. All rights reserved.</p>
+    </footer>
   );
 };
 
-export default Header;
+export default Footer;

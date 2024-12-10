@@ -1,33 +1,14 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Nav } from "react-bootstrap";
 
 const Sidebar = () => {
   return (
-    <div className="col-md-3 col-lg-2 bg-dark text-light p-3 vh-100">
-      <h4 className="text-center">Menu</h4>
-      <ul className="nav flex-column">
-        <li className="nav-item">
-          <NavLink className="nav-link text-light" to="/dashboard">
-            Dashboard
-          </NavLink>
-        </li>
-        <li className="nav-item">
-          <NavLink className="nav-link text-light" to="/clients">
-            Clients
-          </NavLink>
-        </li>
-        <li className="nav-item">
-          <NavLink className="nav-link text-light" to="/services">
-            Services
-          </NavLink>
-        </li>
-        <li className="nav-item">
-          <NavLink className="nav-link text-light" to="/tasks">
-            Tasks
-          </NavLink>
-        </li>
-      </ul>
-    </div>
+    <Nav defaultActiveKey="/dashboard" className="flex-column">
+      <Nav.Link href="/dashboard">Dashboard</Nav.Link>
+      <Nav.Link href="/clients">Clients</Nav.Link>
+      <Nav.Link href="/services">Services</Nav.Link>
+      <Nav.Link href="/tasks">Tasks</Nav.Link>
+    </Nav>
   );
 };
 
