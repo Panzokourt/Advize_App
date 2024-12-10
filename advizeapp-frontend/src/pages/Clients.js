@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://advizeapp-0bd9740bb742.herokuapp.com";
+import { Container, Row, Col, Table, Button, Form, Modal } from "react-bootstrap";
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", vat: "", phone: "" });
-  const [editingClient, setEditingClient] = useState(null);
+  const [newClient, setNewClient] = useState({ name: "", email: "", vat: "", phone: "" });
+  const [editClient, setEditClient] = useState(null);
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/v1/clients/?company_id=1`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients`);
       setClients(response.data);
     } catch (error) {
-      console.error("Error fetching clients:", error.message);
+      console.error("Error fetching clients:", error);
     }
   };
 
@@ -23,35 +21,32 @@ const Clients = () => {
     fetchClients();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleAddClient = async () => {
     try {
-      if (editingClient) {
-        await axios.put(`${BACKEND_URL}/api/v1/clients/${editingClient.id}`, formData);
-      } else {
-        await axios.post(`${BACKEND_URL}/api/v1/clients/`, { ...formData, company_id: 1 });
-      }
-      setFormData({ name: "", email: "", vat: "", phone: "" });
-      setEditingClient(null);
-      setShowModal(false);
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients`, newClient);
       fetchClients();
+      setShowModal(false);
     } catch (error) {
-      console.error("Error saving client:", error.message);
+      console.error("Error adding client:", error);
     }
   };
 
-  const handleEdit = (client) => {
-    setFormData(client);
-    setEditingClient(client);
-    setShowModal(true);
-  };
-
-  const handleDelete = async (id) => {
+  const handleDeleteClient = async (id) => {
     try {
-      await axios.delete(`${BACKEND_URL}/api/v1/clients/${id}`);
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients/${id}`);
       fetchClients();
     } catch (error) {
-      console.error("Error deleting client:", error.message);
+      console.error("Error deleting client:", error);
+    }
+  };
+
+  const handleEditClient = async () => {
+    try {
+      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients/${editClient.id}`, editClient);
+      fetchClients();
+      setEditClient(null);
+    } catch (error) {
+      console.error("Error editing client:", error);
     }
   };
 
@@ -60,15 +55,15 @@ const Clients = () => {
       <Row className="mt-4">
         <Col>
           <h2>Clients</h2>
-          <Button variant="primary" className="mb-3" onClick={() => setShowModal(true)}>
+          <Button variant="primary" onClick={() => setShowModal(true)}>
             Add Client
           </Button>
-          <Table striped bordered hover responsive>
+          <Table striped bordered hover responsive className="mt-3">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>VAT Number</th>
+                <th>VAT</th>
                 <th>Phone</th>
                 <th>Actions</th>
               </tr>
@@ -81,10 +76,10 @@ const Clients = () => {
                   <td>{client.vat}</td>
                   <td>{client.phone}</td>
                   <td>
-                    <Button variant="warning" onClick={() => handleEdit(client)} className="me-2">
+                    <Button variant="warning" size="sm" onClick={() => setEditClient(client)}>
                       Edit
-                    </Button>
-                    <Button variant="danger" onClick={() => handleDelete(client.id)}>
+                    </Button>{" "}
+                    <Button variant="danger" size="sm" onClick={() => handleDeleteClient(client.id)}>
                       Delete
                     </Button>
                   </td>
@@ -95,53 +90,113 @@ const Clients = () => {
         </Col>
       </Row>
 
-      {/* Modal */}
+      {/* Modal για προσθήκη πελάτη */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{editingClient ? "Edit Client" : "Add Client"}</Modal.Title>
+          <Modal.Title>Add Client</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
+          <Form>
+            <Form.Group controlId="clientName">
               <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
+                placeholder="Enter name"
+                value={newClient.name}
+                onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
               />
             </Form.Group>
-            <Form.Group className="mb-3">
+            <Form.Group controlId="clientEmail" className="mt-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
+                placeholder="Enter email"
+                value={newClient.email}
+                onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>VAT Number</Form.Label>
+            <Form.Group controlId="clientVat" className="mt-3">
+              <Form.Label>VAT</Form.Label>
               <Form.Control
                 type="text"
-                value={formData.vat}
-                onChange={(e) => setFormData({ ...formData, vat: e.target.value })}
+                placeholder="Enter VAT"
+                value={newClient.vat}
+                onChange={(e) => setNewClient({ ...newClient, vat: e.target.value })}
               />
             </Form.Group>
-            <Form.Group className="mb-3">
+            <Form.Group controlId="clientPhone" className="mt-3">
               <Form.Label>Phone</Form.Label>
               <Form.Control
                 type="text"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="Enter phone"
+                value={newClient.phone}
+                onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
               />
             </Form.Group>
-            <Button type="submit" variant="primary">
-              {editingClient ? "Update Client" : "Add Client"}
-            </Button>
           </Form>
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleAddClient}>
+            Save
+          </Button>
+        </Modal.Footer>
       </Modal>
+
+      {/* Modal για επεξεργασία πελάτη */}
+      {editClient && (
+        <Modal show onHide={() => setEditClient(null)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Client</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="editClientName">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={editClient.name}
+                  onChange={(e) => setEditClient({ ...editClient, name: e.target.value })}
+                />
+              </Form.Group>
+              <Form.Group controlId="editClientEmail" className="mt-3">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={editClient.email}
+                  onChange={(e) => setEditClient({ ...editClient, email: e.target.value })}
+                />
+              </Form.Group>
+              <Form.Group controlId="editClientVat" className="mt-3">
+                <Form.Label>VAT</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={editClient.vat}
+                  onChange={(e) => setEditClient({ ...editClient, vat: e.target.value })}
+                />
+              </Form.Group>
+              <Form.Group controlId="editClientPhone" className="mt-3">
+                <Form.Label>Phone</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={editClient.phone}
+                  onChange={(e) => setEditClient({ ...editClient, phone: e.target.value })}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setEditClient(null)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleEditClient}>
+              Save
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </Container>
   );
 };

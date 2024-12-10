@@ -1,59 +1,74 @@
-/* General styles */
+/* General Styles */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f8f9fa; /* Light background for the app */
+  background-color: #f5f5f5; /* Neutral light background for the app */
 }
 
-/* Sidebar styles */
+/* App Container */
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+/* Sidebar Styles */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 240px;
-  height: 100%;
-  background-color: #ffffff; /* White sidebar background */
-  border-right: 1px solid #ddd; /* Border for a cleaner look */
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-
-.sidebar .sidebar-link {
-  display: block;
-  padding: 10px 15px;
-  font-size: 16px;
-  color: #333; /* Dark gray text */
-  text-decoration: none;
-  transition: color 0.3s ease, background-color 0.3s ease;
-}
-
-.sidebar .sidebar-link:hover {
-  background-color: #f0f0f0; /* Light hover effect */
-  color: #0d6efd; /* Bootstrap primary blue for hover text */
-}
-
-/* Main content container */
-.content-container {
-  margin-left: 240px; /* Reserve space for the sidebar */
+  background-color: #343a40; /* Dark background for sidebar */
+  color: white;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
-  background-color: #ffffff; /* Main content background */
-  min-height: 100vh; /* Ensure content area covers the viewport */
+  position: fixed;
+  height: 100%;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer styles */
-footer {
-  text-align: center;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-top: 1px solid #ddd;
-  position: relative;
+.sidebar .brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
 }
 
-footer a {
-  color: #0d6efd;
+.sidebar .menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar .menu-item {
+  margin-bottom: 1rem;
+}
+
+.sidebar .menu-link {
+  color: white;
   text-decoration: none;
+  font-size: 1rem;
+  padding: 10px 15px;
+  display: block;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
-footer a:hover {
-  text-decoration: underline;
+.sidebar .menu-link:hover {
+  background-color: #495057; /* Slightly lighter background on hover */
+}
+
+/* Main Content Styles */
+.main-content {
+  margin-left: 240px; /* Same width as the sidebar */
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #ffffff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow on the left */
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f1f1f1;
+  padding-bottom: 10px;
 }
