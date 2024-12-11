@@ -4,16 +4,14 @@ import Sidebar from "./Sidebar";
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="h-screen flex flex-col">
       {/* Header */}
       <Header />
       <div className="flex flex-1">
         {/* Sidebar */}
         <Sidebar />
         {/* Main Content */}
-        <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

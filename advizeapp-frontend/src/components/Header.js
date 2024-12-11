@@ -1,39 +1,19 @@
 import React from "react";
-import { HomeModernIcon, UserGroupIcon, BriefcaseIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
-const Sidebar = () => {
+const Header = () => {
   return (
-    <aside className="w-64 bg-purple-700 text-white h-full flex flex-col pt-20">
-      <nav className="px-4">
-        <ul className="space-y-4">
-          <li>
-            <a href="/dashboard" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
-              <HomeModernIcon className="w-5 h-5" />
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="/clients" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
-              <UserGroupIcon className="w-5 h-5" />
-              <span>Clients</span>
-            </a>
-          </li>
-          <li>
-            <a href="/services" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
-              <BriefcaseIcon className="w-5 h-5" />
-              <span>Services</span>
-            </a>
-          </li>
-          <li>
-            <a href="/tasks" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
-              <ClipboardDocumentListIcon className="w-5 h-5" />
-              <span>Tasks</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+    <header className="bg-white h-16 shadow flex items-center justify-between px-6 fixed top-0 left-0 w-full z-10">
+      <div className="flex items-center space-x-4">
+        <h1 className="text-lg font-semibold text-gray-700">AdvizeApp</h1>
+      </div>
+      <div className="flex items-center space-x-4">
+        <button className="text-sm font-medium text-gray-600 hover:text-gray-800">Help</button>
+        <button className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800">
+          Logout
+        </button>
+      </div>
+    </header>
   );
 };
 
-export default Sidebar;
+export default Header;
