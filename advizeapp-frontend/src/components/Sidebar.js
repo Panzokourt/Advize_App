@@ -1,26 +1,35 @@
+// src/components/Sidebar.js
 import React from "react";
-import { Link } from "react-router-dom";
-import "./App.css";
 
 const Sidebar = () => {
   return (
-    <div className="sidebar">
-      <div className="brand">AdvizeApp</div>
-      <ul className="menu">
-        <li className="menu-item">
-          <Link to="/dashboard" className="menu-link">Dashboard</Link>
+    <aside className="w-64 bg-gray-800 text-white min-h-screen">
+      <div className="p-4">
+        <h2 className="text-xl font-bold">AdvizeApp</h2>
+      </div>
+      <ul className="mt-4 space-y-2">
+        <li>
+          <a href="/dashboard" className="block p-2 hover:bg-gray-700">
+            Dashboard
+          </a>
         </li>
-        <li className="menu-item">
-          <Link to="/clients" className="menu-link">Clients</Link>
+        <li>
+          <a href="/clients" className="block p-2 hover:bg-gray-700">
+            Clients
+          </a>
         </li>
-        <li className="menu-item">
-          <Link to="/services" className="menu-link">Services</Link>
+        <li>
+          <a href="/services" className="block p-2 hover:bg-gray-700">
+            Services
+          </a>
         </li>
-        <li className="menu-item">
-          <Link to="/tasks" className="menu-link">Tasks</Link>
+        <li>
+          <a href="/tasks" className="block p-2 hover:bg-gray-700">
+            Tasks
+          </a>
         </li>
       </ul>
-    </div>
+    </aside>
   );
 };
 
