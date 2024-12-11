@@ -1,4 +1,6 @@
-import React from 'react';
+// Sidebar.js
+import React from "react";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
@@ -6,11 +8,26 @@ const Sidebar = () => {
       <h2 className="text-xl font-bold mb-6">AdvizeApp</h2>
       <nav>
         <ul className="space-y-4">
-          <li className="hover:text-purple-600"><a href="#">Dashboard</a></li>
-          <li className="hover:text-purple-600"><a href="#">Messages</a></li>
-          <li className="hover:text-purple-600"><a href="#">Projects</a></li>
-          <li className="hover:text-purple-600"><a href="#">Teams</a></li>
-          <li className="hover:text-purple-600"><a href="#">Settings</a></li>
+          <li>
+            <Link to="/" className="hover:text-purple-600">
+              Dashboard
+            </Link>
+          </li>
+          <li>
+            <Link to="/clients" className="hover:text-purple-600">
+              Clients
+            </Link>
+          </li>
+          <li>
+            <Link to="/services" className="hover:text-purple-600">
+              Services
+            </Link>
+          </li>
+          <li>
+            <Link to="/tasks" className="hover:text-purple-600">
+              Tasks
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>

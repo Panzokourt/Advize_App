@@ -1,6 +1,7 @@
-import React from 'react';
+// RightPanel.js
+import React from "react";
 
-function RightPanel() {
+const RightPanel = () => {
   return (
     <div className="w-1/4 h-screen bg-gray-50 border-l border-gray-300 p-4">
       <h3 className="text-lg font-bold mb-4">Activity</h3>
@@ -11,6 +12,6 @@ function RightPanel() {
       </ul>
     </div>
   );
-}
+};
 
 export default RightPanel;
