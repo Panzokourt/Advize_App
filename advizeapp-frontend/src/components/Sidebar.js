@@ -1,28 +1,50 @@
 import React from "react";
+import { HomeIcon, UsersIcon, BriefcaseIcon, ClipboardListIcon } from "@heroicons/react/solid";
 
 const Sidebar = () => {
-  const menuItems = [
-    { name: "Dashboard", icon: "🏠", link: "/dashboard" },
-    { name: "Clients", icon: "👥", link: "/clients" },
-    { name: "Services", icon: "📦", link: "/services" },
-    { name: "Tasks", icon: "📝", link: "/tasks" },
-  ];
-
   return (
-    <aside className="w-64 bg-purple-700 text-white flex flex-col pt-20 fixed h-full">
-      <nav className="flex-1 px-4">
-        <ul className="space-y-4">
-          {menuItems.map((item, index) => (
-            <li key={index}>
-              <a
-                href={item.link}
-                className="flex items-center space-x-3 hover:bg-purple-800 p-3 rounded text-sm"
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span>{item.name}</span>
-              </a>
-            </li>
-          ))}
+    <aside className="w-64 bg-purple-800 text-white flex flex-col">
+      <div className="flex items-center justify-center h-16 font-bold border-b border-purple-700">
+        AdvizeApp
+      </div>
+      <nav className="flex-1 p-4">
+        <ul className="space-y-3">
+          <li>
+            <a
+              href="/dashboard"
+              className="flex items-center space-x-3 p-2 rounded hover:bg-purple-700"
+            >
+              <HomeIcon className="w-5 h-5" />
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/clients"
+              className="flex items-center space-x-3 p-2 rounded hover:bg-purple-700"
+            >
+              <UsersIcon className="w-5 h-5" />
+              <span>Clients</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/services"
+              className="flex items-center space-x-3 p-2 rounded hover:bg-purple-700"
+            >
+              <BriefcaseIcon className="w-5 h-5" />
+              <span>Services</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/tasks"
+              className="flex items-center space-x-3 p-2 rounded hover:bg-purple-700"
+            >
+              <ClipboardListIcon className="w-5 h-5" />
+              <span>Tasks</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </aside>
