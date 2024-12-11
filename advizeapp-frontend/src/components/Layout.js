@@ -1,23 +1,16 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 
 const Layout = ({ children }) => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <Container fluid>
-        <Row>
-          <Col md={2} className="sidebar">
-            <Sidebar />
-          </Col>
-          <Col md={10}>
-            <main>{children}</main>
-          </Col>
-        </Row>
-      </Container>
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 bg-gray-100 p-4">{children}</main>
+      </div>
       <Footer />
     </div>
   );

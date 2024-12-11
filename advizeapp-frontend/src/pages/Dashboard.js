@@ -1,44 +1,25 @@
 import React from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
 
 const Dashboard = () => {
   return (
-    <Container fluid className="mt-4">
-      <Row>
-        <Col md={3}>
-          <Card className="text-center shadow-sm">
-            <Card.Body>
-              <Card.Title>Total Clients</Card.Title>
-              <Card.Text>10</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="text-center shadow-sm">
-            <Card.Body>
-              <Card.Title>Total Services</Card.Title>
-              <Card.Text>25</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="text-center shadow-sm">
-            <Card.Body>
-              <Card.Title>Total Tasks</Card.Title>
-              <Card.Text>50</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="text-center shadow-sm">
-            <Card.Body>
-              <Card.Title>Revenue</Card.Title>
-              <Card.Text>$5000</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="bg-white shadow-md rounded-lg p-6 text-center">
+        <h3 className="text-lg font-bold">Total Clients</h3>
+        <p className="text-2xl">10</p>
+      </div>
+      <div className="bg-white shadow-md rounded-lg p-6 text-center">
+        <h3 className="text-lg font-bold">Total Services</h3>
+        <p className="text-2xl">25</p>
+      </div>
+      <div className="bg-white shadow-md rounded-lg p-6 text-center">
+        <h3 className="text-lg font-bold">Total Tasks</h3>
+        <p className="text-2xl">50</p>
+      </div>
+      <div className="bg-white shadow-md rounded-lg p-6 text-center">
+        <h3 className="text-lg font-bold">Revenue</h3>
+        <p className="text-2xl">$5000</p>
+      </div>
+    </div>
   );
 };
 
