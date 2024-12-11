@@ -1,4 +1,5 @@
-// Main Content Component
+import React from 'react';
+
 function MainContent() {
   return (
     <div className="flex-1 bg-white p-6">
@@ -7,3 +8,5 @@ function MainContent() {
     </div>
   );
 }
+
+export default MainContent;
