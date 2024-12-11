@@ -1,34 +1,17 @@
-import React from "react";
-
-const Sidebar = () => {
-  const menuItems = [
-    { name: "Dashboard", link: "/dashboard" },
-    { name: "Clients", link: "/clients" },
-    { name: "Services", link: "/services" },
-    { name: "Tasks", link: "/tasks" },
-  ];
-
+// Sidebar Component
+function Sidebar() {
   return (
-    <aside className="w-64 bg-purple-800 text-white flex flex-col">
-      <div className="flex items-center justify-center h-16 font-bold border-b border-purple-700">
-        AdvizeApp
-      </div>
-      <nav className="flex-1 p-4">
-        <ul className="space-y-3">
-          {menuItems.map((item, index) => (
-            <li key={index}>
-              <a
-                href={item.link}
-                className="block p-3 rounded hover:bg-purple-700 text-sm font-medium"
-              >
-                {item.name}
-              </a>
-            </li>
-          ))}
+    <div className="w-1/5 h-screen bg-gray-100 border-r border-gray-300 p-4">
+      <h2 className="text-xl font-bold mb-6">AdvizeApp</h2>
+      <nav>
+        <ul className="space-y-4">
+          <li className="hover:text-purple-600"><a href="#">Dashboard</a></li>
+          <li className="hover:text-purple-600"><a href="#">Messages</a></li>
+          <li className="hover:text-purple-600"><a href="#">Projects</a></li>
+          <li className="hover:text-purple-600"><a href="#">Teams</a></li>
+          <li className="hover:text-purple-600"><a href="#">Settings</a></li>
         </ul>
       </nav>
-    </aside>
+    </div>
   );
-};
-
-export default Sidebar;
+}
