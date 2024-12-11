@@ -1,17 +1,20 @@
 import React from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import Footer from "./Footer";
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen">
+      {/* Header */}
       <Header />
       <div className="flex flex-1">
+        {/* Sidebar */}
         <Sidebar />
-        <main className="flex-1 bg-gray-100 p-4">{children}</main>
+        {/* Main Content */}
+        <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+          {children}
+        </main>
       </div>
-      <Footer />
     </div>
   );
 };
