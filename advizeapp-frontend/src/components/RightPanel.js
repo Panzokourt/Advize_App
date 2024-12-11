@@ -1,4 +1,5 @@
-// Right Panel Component
+import React from 'react';
+
 function RightPanel() {
   return (
     <div className="w-1/4 h-screen bg-gray-50 border-l border-gray-300 p-4">
@@ -11,3 +12,5 @@ function RightPanel() {
     </div>
   );
 }
+
+export default RightPanel;
