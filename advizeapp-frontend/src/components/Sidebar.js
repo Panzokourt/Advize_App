@@ -1,5 +1,5 @@
 import React from "react";
-import { HomeIcon, UsersIcon, BriefcaseIcon, ClipboardListIcon } from "@heroicons/react/outline";
+import { HomeIcon, UserGroupIcon, BriefcaseIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
 const Sidebar = () => {
   return (
@@ -17,7 +17,7 @@ const Sidebar = () => {
           </li>
           <li>
             <a href="/clients" className="flex items-center space-x-3 hover:bg-purple-800 p-3 rounded">
-              <UsersIcon className="w-6 h-6" />
+              <UserGroupIcon className="w-6 h-6" />
               <span>Clients</span>
             </a>
           </li>
@@ -29,7 +29,7 @@ const Sidebar = () => {
           </li>
           <li>
             <a href="/tasks" className="flex items-center space-x-3 hover:bg-purple-800 p-3 rounded">
-              <ClipboardListIcon className="w-6 h-6" />
+              <ClipboardDocumentListIcon className="w-6 h-6" />
               <span>Tasks</span>
             </a>
           </li>
