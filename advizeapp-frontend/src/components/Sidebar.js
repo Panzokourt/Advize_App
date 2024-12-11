@@ -3,39 +3,39 @@ import { HomeModernIcon, UserGroupIcon, BriefcaseIcon, ClipboardDocumentListIcon
 
 const Sidebar = () => {
   return (
-    <aside className="w-64 bg-purple-700 text-white h-screen flex flex-col">
+    <aside className="w-60 bg-purple-700 text-white h-screen flex flex-col">
       <div className="p-4">
-        <h2 className="text-2xl font-bold">AdvizeApp</h2>
+        <h2 className="text-lg font-semibold">AdvizeApp</h2>
       </div>
-      <nav className="flex-1 px-4">
-        <ul className="space-y-4">
+      <nav className="flex-1 px-2">
+        <ul className="space-y-2">
           <li>
-            <a href="/dashboard" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded">
-              <HomeModernIcon className="w-6 h-6" />
+            <a href="/dashboard" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
+              <HomeModernIcon className="w-5 h-5" />
               <span>Dashboard</span>
             </a>
           </li>
           <li>
-            <a href="/clients" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded">
-              <UserGroupIcon className="w-6 h-6" />
+            <a href="/clients" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
+              <UserGroupIcon className="w-5 h-5" />
               <span>Clients</span>
             </a>
           </li>
           <li>
-            <a href="/services" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded">
-              <BriefcaseIcon className="w-6 h-6" />
+            <a href="/services" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
+              <BriefcaseIcon className="w-5 h-5" />
               <span>Services</span>
             </a>
           </li>
           <li>
-            <a href="/tasks" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded">
-              <ClipboardDocumentListIcon className="w-6 h-6" />
+            <a href="/tasks" className="flex items-center space-x-3 hover:bg-purple-800 p-2 rounded text-sm">
+              <ClipboardDocumentListIcon className="w-5 h-5" />
               <span>Tasks</span>
             </a>
           </li>
         </ul>
       </nav>
-      <div className="p-4 text-sm text-center">
+      <div className="p-4 text-xs text-center">
         <p>© 2024 AdvizeApp</p>
       </div>
     </aside>
