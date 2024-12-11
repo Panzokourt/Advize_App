@@ -1,5 +1,6 @@
-// Sidebar Component
-function Sidebar() {
+import React from 'react';
+
+const Sidebar = () => {
   return (
     <div className="w-1/5 h-screen bg-gray-100 border-r border-gray-300 p-4">
       <h2 className="text-xl font-bold mb-6">AdvizeApp</h2>
@@ -14,4 +15,6 @@ function Sidebar() {
       </nav>
     </div>
   );
-}
+};
+
+export default Sidebar;

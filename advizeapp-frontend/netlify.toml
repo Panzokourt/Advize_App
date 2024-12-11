@@ -1,8 +1,8 @@
 [build]
   base = "advizeapp-frontend"
-  command = "npm run build"
+  command = "CI= npm run build"
   publish = "build"
-  environment = { CI = "false" }
+  
 
 [context.production.environment]
   REACT_APP_BACKEND_URL = "https://advizeapp-0bd9740bb742.herokuapp.com"
