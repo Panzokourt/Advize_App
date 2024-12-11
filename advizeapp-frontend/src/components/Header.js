@@ -3,12 +3,12 @@ import React from "react";
 const Header = () => {
   return (
     <header className="bg-white shadow fixed top-0 left-0 w-full h-16 flex items-center justify-between px-6 z-10">
+      <h1 className="text-lg font-bold text-purple-700">AdvizeApp</h1>
       <div className="flex items-center space-x-4">
-        <h1 className="text-xl font-bold text-purple-700">AdvizeApp</h1>
-      </div>
-      <div className="flex items-center space-x-4">
-        <button className="text-sm font-medium text-gray-600 hover:text-gray-800">Notifications</button>
-        <button className="text-sm font-medium text-gray-600 hover:text-gray-800">Profile</button>
+        <button className="text-sm font-medium text-gray-600 hover:text-gray-800">Help</button>
+        <button className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800">
+          Logout
+        </button>
       </div>
     </header>
   );
