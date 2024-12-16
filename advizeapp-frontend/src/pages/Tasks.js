@@ -31,10 +31,13 @@ const Tasks = () => {
     }
   };
 
+  
   const filteredTasks = tasks.filter(task =>
-    task.name.toLowerCase().includes(searchTerm.toLowerCase())
+    task?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
 
+  
   return (
     <motion.div
       className="p-4"
