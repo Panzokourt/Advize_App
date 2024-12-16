@@ -1,4 +1,3 @@
-// RightPanel.js
 import React from "react";
 
 const RightPanel = () => {

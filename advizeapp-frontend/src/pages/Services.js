@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 const Services = () => {
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: "", description: "", price: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchServices = async () => {
     try {
@@ -29,8 +31,17 @@ const Services = () => {
     }
   };
 
+  const filteredServices = services.filter(service =>
+    service.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="p-4">
+    <motion.div
+      className="p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Services</h2>
         <button
@@ -40,6 +51,13 @@ const Services = () => {
           Add Service
         </button>
       </div>
+      <input
+        type="text"
+        placeholder="Search services..."
+        className="w-full mt-4 mb-2 p-2 border rounded"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
       <table className="w-full mt-4 border border-gray-200 shadow-sm">
         <thead>
           <tr className="bg-gray-100 text-left">
@@ -50,7 +68,7 @@ const Services = () => {
           </tr>
         </thead>
         <tbody>
-          {services.map((service) => (
+          {filteredServices.map((service) => (
             <tr key={service.id} className="border-t hover:bg-gray-50">
               <td className="p-2">{service.name}</td>
               <td className="p-2">{service.description}</td>
@@ -106,7 +124,7 @@ const Services = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
