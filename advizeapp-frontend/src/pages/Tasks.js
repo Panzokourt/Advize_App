@@ -4,20 +4,21 @@ import { motion } from "framer-motion";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
-  const [clients, setClients] = useState([]); // Λίστα πελατών για το dropdown
+  const [clients, setClients] = useState([]); // Λίστα πελατών για dropdown
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
     status: "Pending",
     deadline: "",
     client_id: "",
+    employee_id: 1, // Προσωρινό, θα το κάνουμε δυναμικό αργότερα
   });
   const [selectedTask, setSelectedTask] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Ανάκτηση εργασιών
+  // Φόρτωση εργασιών
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks`);
@@ -27,11 +28,11 @@ const Tasks = () => {
     }
   };
 
-  // Ανάκτηση πελατών
+  // Φόρτωση πελατών
   const fetchClients = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients`);
-      setClients(response.data); // Αναθέτουμε τη λίστα πελατών
+      setClients(response.data);
     } catch (error) {
       console.error("Error fetching clients:", error);
     }
@@ -39,19 +40,22 @@ const Tasks = () => {
 
   useEffect(() => {
     fetchTasks();
-    fetchClients(); // Ανάκτηση πελατών κατά την πρώτη φόρτωση
+    fetchClients();
   }, []);
 
-  // Προσθήκη ή Ενημέρωση εργασίας
+  // Αποθήκευση εργασίας
   const handleAddTask = async () => {
     try {
       const formattedTask = {
         client_id: newTask.client_id,
+        employee_id: newTask.employee_id,
         title: newTask.title,
-        description: newTask.description,
+        description: newTask.description || "No description",
         deadline: newTask.deadline,
         status: newTask.status,
       };
+
+      console.log("Task Data Sent:", formattedTask); // Debug
 
       if (isEditMode && selectedTask) {
         await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${selectedTask.id}`, formattedTask);
@@ -66,58 +70,29 @@ const Tasks = () => {
     }
   };
 
-  // Επεξεργασία εργασίας
-  const handleEditTask = (task) => {
-    setIsEditMode(true);
-    setSelectedTask(task);
-    setNewTask({
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      deadline: task.deadline,
-      client_id: task.client_id,
-    });
-    setIsModalOpen(true);
-  };
-
-  // Διαγραφή εργασίας
-  const handleDeleteTask = async (taskId) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      try {
-        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${taskId}`);
-        fetchTasks();
-      } catch (error) {
-        console.error("Error deleting task:", error);
-      }
-    }
-  };
-
-  // Επαναφορά Modal
   const resetModal = () => {
     setIsModalOpen(false);
     setIsEditMode(false);
     setSelectedTask(null);
-    setNewTask({ title: "", description: "", status: "Pending", deadline: "", client_id: "" });
+    setNewTask({
+      title: "",
+      description: "",
+      status: "Pending",
+      deadline: "",
+      client_id: "",
+      employee_id: 1,
+    });
   };
 
-  // Φιλτράρισμα εργασιών
   const filteredTasks = tasks.filter(task =>
     task?.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <motion.div
-      className="p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <motion.div className="p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Tasks</h2>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
+        <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
           Add Task
         </button>
       </div>
@@ -135,7 +110,6 @@ const Tasks = () => {
             <th className="p-2">Client</th>
             <th className="p-2">Status</th>
             <th className="p-2">Deadline</th>
-            <th className="p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -145,10 +119,6 @@ const Tasks = () => {
               <td className="p-2">{clients.find(client => client.id === task.client_id)?.name || "N/A"}</td>
               <td className="p-2">{task.status}</td>
               <td className="p-2">{task.deadline}</td>
-              <td className="p-2">
-                <button onClick={() => handleEditTask(task)} className="text-yellow-500 hover:underline">Edit</button> |{" "}
-                <button onClick={() => handleDeleteTask(task.id)} className="text-red-500 hover:underline">Delete</button>
-              </td>
             </tr>
           ))}
         </tbody>
@@ -158,19 +128,6 @@ const Tasks = () => {
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded p-4 w-1/3">
             <h3 className="text-xl mb-4">{isEditMode ? "Edit Task" : "Add Task"}</h3>
-            <input
-              type="text"
-              placeholder="Title"
-              className="w-full mb-2 p-2 border rounded"
-              value={newTask.title}
-              onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-            />
-            <textarea
-              placeholder="Description"
-              className="w-full mb-2 p-2 border rounded"
-              value={newTask.description}
-              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-            />
             <select
               className="w-full mb-2 p-2 border rounded"
               value={newTask.client_id}
@@ -183,6 +140,13 @@ const Tasks = () => {
                 </option>
               ))}
             </select>
+            <input
+              type="text"
+              placeholder="Title"
+              className="w-full mb-2 p-2 border rounded"
+              value={newTask.title}
+              onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+            />
             <input
               type="date"
               className="w-full mb-2 p-2 border rounded"
