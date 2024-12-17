@@ -27,17 +27,27 @@ const Tasks = () => {
   // Προσθήκη ή Ενημέρωση εργασίας
   const handleAddTask = async () => {
     try {
+      const formattedTask = {
+        name: newTask.name,
+        status: newTask.status,
+        due_date: newTask.dueDate, // Προσαρμογή του 'dueDate' σε 'due_date'
+      };
+  
+      console.log("Task Data Sent:", formattedTask); // Debugging
+  
       if (isEditMode && selectedTask) {
-        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${selectedTask.id}`, newTask);
+        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${selectedTask.id}`, formattedTask);
       } else {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks`, newTask);
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks`, formattedTask);
       }
-      fetchTasks();
+  
+      fetchTasks(); // Επαναφόρτωση εργασιών
       resetModal();
     } catch (error) {
-      console.error("Error saving task:", error);
+      console.error("Error saving task:", error.response ? error.response.data : error.message);
     }
   };
+  
 
   // Επεξεργασία εργασίας
   const handleEditTask = (task) => {
