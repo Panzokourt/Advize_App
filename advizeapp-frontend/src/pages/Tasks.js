@@ -11,7 +11,7 @@ const Tasks = () => {
     status: "Pending",
     deadline: "",
     client_id: "",
-    employee_id: 1, // Προσωρινό, θα το κάνουμε δυναμικό αργότερα
+    employee_id: 1,
   });
   const [selectedTask, setSelectedTask] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,19 +43,17 @@ const Tasks = () => {
     fetchClients();
   }, []);
 
-  // Αποθήκευση εργασίας
+  // Αποθήκευση ή Ενημέρωση εργασίας
   const handleAddTask = async () => {
     try {
       const formattedTask = {
         client_id: newTask.client_id,
         employee_id: newTask.employee_id,
         title: newTask.title,
-        description: newTask.description || "No description",
+        description: newTask.description,
         deadline: newTask.deadline,
         status: newTask.status,
       };
-
-      console.log("Task Data Sent:", formattedTask); // Debug
 
       if (isEditMode && selectedTask) {
         await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${selectedTask.id}`, formattedTask);
@@ -68,6 +66,33 @@ const Tasks = () => {
     } catch (error) {
       console.error("Error saving task:", error.response ? error.response.data : error.message);
     }
+  };
+
+  // Διαγραφή εργασίας
+  const handleDeleteTask = async (taskId) => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${taskId}`);
+        fetchTasks();
+      } catch (error) {
+        console.error("Error deleting task:", error);
+      }
+    }
+  };
+
+  // Επεξεργασία εργασίας
+  const handleEditTask = (task) => {
+    setIsEditMode(true);
+    setSelectedTask(task);
+    setNewTask({
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      deadline: task.deadline,
+      client_id: task.client_id,
+      employee_id: task.employee_id,
+    });
+    setIsModalOpen(true);
   };
 
   const resetModal = () => {
@@ -107,18 +132,25 @@ const Tasks = () => {
         <thead>
           <tr className="bg-gray-100 text-left">
             <th className="p-2">Title</th>
+            <th className="p-2">Description</th>
             <th className="p-2">Client</th>
             <th className="p-2">Status</th>
             <th className="p-2">Deadline</th>
+            <th className="p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredTasks.map((task) => (
             <tr key={task.id} className="border-t hover:bg-gray-50">
               <td className="p-2">{task.title}</td>
+              <td className="p-2">{task.description}</td>
               <td className="p-2">{clients.find(client => client.id === task.client_id)?.name || "N/A"}</td>
               <td className="p-2">{task.status}</td>
               <td className="p-2">{task.deadline}</td>
+              <td className="p-2">
+                <button onClick={() => handleEditTask(task)} className="text-yellow-500 hover:underline">Edit</button> |{" "}
+                <button onClick={() => handleDeleteTask(task.id)} className="text-red-500 hover:underline">Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -146,6 +178,12 @@ const Tasks = () => {
               className="w-full mb-2 p-2 border rounded"
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+            />
+            <textarea
+              placeholder="Description"
+              className="w-full mb-2 p-2 border rounded"
+              value={newTask.description}
+              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
             />
             <input
               type="date"
