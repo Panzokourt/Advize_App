@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({ name: "", status: "Pending", dueDate: "" });
+  const [selectedTask, setSelectedTask] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Ανάκτηση εργασιών
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks`);
@@ -21,23 +24,54 @@ const Tasks = () => {
     fetchTasks();
   }, []);
 
+  // Προσθήκη ή Ενημέρωση εργασίας
   const handleAddTask = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks`, newTask);
+      if (isEditMode && selectedTask) {
+        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${selectedTask.id}`, newTask);
+      } else {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks`, newTask);
+      }
       fetchTasks();
-      setIsModalOpen(false);
+      resetModal();
     } catch (error) {
-      console.error("Error adding task:", error);
+      console.error("Error saving task:", error);
     }
   };
 
-  
+  // Επεξεργασία εργασίας
+  const handleEditTask = (task) => {
+    setIsEditMode(true);
+    setSelectedTask(task);
+    setNewTask({ name: task.name, status: task.status, dueDate: task.dueDate });
+    setIsModalOpen(true);
+  };
+
+  // Διαγραφή εργασίας
+  const handleDeleteTask = async (taskId) => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${taskId}`);
+        fetchTasks();
+      } catch (error) {
+        console.error("Error deleting task:", error);
+      }
+    }
+  };
+
+  // Επαναφορά Modal
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setSelectedTask(null);
+    setNewTask({ name: "", status: "Pending", dueDate: "" });
+  };
+
+  // Φιλτράρισμα εργασιών
   const filteredTasks = tasks.filter(task =>
     task?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
 
-  
   return (
     <motion.div
       className="p-4"
@@ -87,8 +121,19 @@ const Tasks = () => {
               </td>
               <td className="p-2">{task.dueDate}</td>
               <td className="p-2">
-                <button className="text-yellow-500 hover:underline">Edit</button> |{" "}
-                <button className="text-red-500 hover:underline">Delete</button>
+                <button
+                  onClick={() => handleEditTask(task)}
+                  className="text-yellow-500 hover:underline"
+                >
+                  Edit
+                </button>
+                {" | "}
+                <button
+                  onClick={() => handleDeleteTask(task.id)}
+                  className="text-red-500 hover:underline"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
@@ -98,7 +143,7 @@ const Tasks = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded p-4 w-1/3">
-            <h3 className="text-xl mb-4">Add Task</h3>
+            <h3 className="text-xl mb-4">{isEditMode ? "Edit Task" : "Add Task"}</h3>
             <input
               type="text"
               placeholder="Task Name"
@@ -122,7 +167,7 @@ const Tasks = () => {
             />
             <div className="flex justify-end space-x-2">
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={resetModal}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
               >
                 Cancel
@@ -131,7 +176,7 @@ const Tasks = () => {
                 onClick={handleAddTask}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
-                Save
+                {isEditMode ? "Update" : "Save"}
               </button>
             </div>
           </div>
