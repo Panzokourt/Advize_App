@@ -4,7 +4,14 @@ import { motion } from "framer-motion";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState({ name: "", status: "Pending", dueDate: "" });
+  const [clients, setClients] = useState([]); // Λίστα πελατών για το dropdown
+  const [newTask, setNewTask] = useState({
+    title: "",
+    description: "",
+    status: "Pending",
+    deadline: "",
+    client_id: "",
+  });
   const [selectedTask, setSelectedTask] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -20,40 +27,56 @@ const Tasks = () => {
     }
   };
 
+  // Ανάκτηση πελατών
+  const fetchClients = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients`);
+      setClients(response.data); // Αναθέτουμε τη λίστα πελατών
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
+    fetchClients(); // Ανάκτηση πελατών κατά την πρώτη φόρτωση
   }, []);
 
   // Προσθήκη ή Ενημέρωση εργασίας
   const handleAddTask = async () => {
     try {
       const formattedTask = {
-        name: newTask.name,
+        client_id: newTask.client_id,
+        title: newTask.title,
+        description: newTask.description,
+        deadline: newTask.deadline,
         status: newTask.status,
-        due_date: newTask.dueDate, // Προσαρμογή του 'dueDate' σε 'due_date'
       };
-  
-      console.log("Task Data Sent:", formattedTask); // Debugging
-  
+
       if (isEditMode && selectedTask) {
         await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks/${selectedTask.id}`, formattedTask);
       } else {
         await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/tasks`, formattedTask);
       }
-  
-      fetchTasks(); // Επαναφόρτωση εργασιών
+
+      fetchTasks();
       resetModal();
     } catch (error) {
       console.error("Error saving task:", error.response ? error.response.data : error.message);
     }
   };
-  
 
   // Επεξεργασία εργασίας
   const handleEditTask = (task) => {
     setIsEditMode(true);
     setSelectedTask(task);
-    setNewTask({ name: task.name, status: task.status, dueDate: task.dueDate });
+    setNewTask({
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      deadline: task.deadline,
+      client_id: task.client_id,
+    });
     setIsModalOpen(true);
   };
 
@@ -74,12 +97,12 @@ const Tasks = () => {
     setIsModalOpen(false);
     setIsEditMode(false);
     setSelectedTask(null);
-    setNewTask({ name: "", status: "Pending", dueDate: "" });
+    setNewTask({ title: "", description: "", status: "Pending", deadline: "", client_id: "" });
   };
 
   // Φιλτράρισμα εργασιών
   const filteredTasks = tasks.filter(task =>
-    task?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    task?.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -108,42 +131,23 @@ const Tasks = () => {
       <table className="w-full mt-4 border border-gray-200 shadow-sm">
         <thead>
           <tr className="bg-gray-100 text-left">
-            <th className="p-2">Task Name</th>
+            <th className="p-2">Title</th>
+            <th className="p-2">Client</th>
             <th className="p-2">Status</th>
-            <th className="p-2">Due Date</th>
+            <th className="p-2">Deadline</th>
             <th className="p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredTasks.map((task) => (
             <tr key={task.id} className="border-t hover:bg-gray-50">
-              <td className="p-2">{task.name}</td>
+              <td className="p-2">{task.title}</td>
+              <td className="p-2">{clients.find(client => client.id === task.client_id)?.name || "N/A"}</td>
+              <td className="p-2">{task.status}</td>
+              <td className="p-2">{task.deadline}</td>
               <td className="p-2">
-                <span
-                  className={`px-2 py-1 rounded ${
-                    task.status === "Completed"
-                      ? "bg-green-500 text-white"
-                      : "bg-yellow-500 text-black"
-                  }`}
-                >
-                  {task.status}
-                </span>
-              </td>
-              <td className="p-2">{task.dueDate}</td>
-              <td className="p-2">
-                <button
-                  onClick={() => handleEditTask(task)}
-                  className="text-yellow-500 hover:underline"
-                >
-                  Edit
-                </button>
-                {" | "}
-                <button
-                  onClick={() => handleDeleteTask(task.id)}
-                  className="text-red-500 hover:underline"
-                >
-                  Delete
-                </button>
+                <button onClick={() => handleEditTask(task)} className="text-yellow-500 hover:underline">Edit</button> |{" "}
+                <button onClick={() => handleDeleteTask(task.id)} className="text-red-500 hover:underline">Delete</button>
               </td>
             </tr>
           ))}
@@ -156,36 +160,46 @@ const Tasks = () => {
             <h3 className="text-xl mb-4">{isEditMode ? "Edit Task" : "Add Task"}</h3>
             <input
               type="text"
-              placeholder="Task Name"
+              placeholder="Title"
               className="w-full mb-2 p-2 border rounded"
-              value={newTask.name}
-              onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+              value={newTask.title}
+              onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+            />
+            <textarea
+              placeholder="Description"
+              className="w-full mb-2 p-2 border rounded"
+              value={newTask.description}
+              onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
             />
             <select
-              value={newTask.status}
-              onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
               className="w-full mb-2 p-2 border rounded"
+              value={newTask.client_id}
+              onChange={(e) => setNewTask({ ...newTask, client_id: e.target.value })}
             >
-              <option value="Pending">Pending</option>
-              <option value="Completed">Completed</option>
+              <option value="">Select Client</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
+              ))}
             </select>
             <input
               type="date"
               className="w-full mb-2 p-2 border rounded"
-              value={newTask.dueDate}
-              onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+              value={newTask.deadline}
+              onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
             />
+            <select
+              className="w-full mb-2 p-2 border rounded"
+              value={newTask.status}
+              onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
+            >
+              <option value="Pending">Pending</option>
+              <option value="Completed">Completed</option>
+            </select>
             <div className="flex justify-end space-x-2">
-              <button
-                onClick={resetModal}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddTask}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
+              <button onClick={resetModal} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+              <button onClick={handleAddTask} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 {isEditMode ? "Update" : "Save"}
               </button>
             </div>
