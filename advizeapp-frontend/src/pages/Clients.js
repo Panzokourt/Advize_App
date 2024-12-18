@@ -5,12 +5,9 @@ import { motion } from "framer-motion";
 const Clients = () => {
   const [clients, setClients] = useState([]);
   const [newClient, setNewClient] = useState({ name: "", email: "", vat: "", phone: "" });
-  const [selectedClient, setSelectedClient] = useState(null); // Για επεξεργασία
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Ανάκτηση πελατών από το API
   const fetchClients = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients`);
@@ -24,57 +21,18 @@ const Clients = () => {
     fetchClients();
   }, []);
 
-  // Προσθήκη ή Ενημέρωση πελάτη
   const handleAddClient = async () => {
     try {
-      if (isEditMode && selectedClient) {
-        await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients/${selectedClient.id}`, newClient);
-      } else {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients`, newClient);
-      }
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients`, newClient);
       fetchClients();
-      resetModal();
+      setIsModalOpen(false);
     } catch (error) {
-      console.error("Error saving client:", error);
+      console.error("Error adding client:", error);
     }
   };
 
-  // Επεξεργασία πελάτη
-  const handleEditClient = (client) => {
-    setIsEditMode(true);
-    setSelectedClient(client);
-    setNewClient({
-      name: client.name,
-      email: client.email,
-      vat: client.vat_number,
-      phone: client.phone,
-    });
-    setIsModalOpen(true);
-  };
-
-  // Διαγραφή πελάτη
-  const handleDeleteClient = async (clientId) => {
-    if (window.confirm("Are you sure you want to delete this client?")) {
-      try {
-        await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/v1/clients/${clientId}`);
-        fetchClients();
-      } catch (error) {
-        console.error("Error deleting client:", error);
-      }
-    }
-  };
-
-  // Επαναφορά modal
-  const resetModal = () => {
-    setIsModalOpen(false);
-    setIsEditMode(false);
-    setSelectedClient(null);
-    setNewClient({ name: "", email: "", vat: "", phone: "" });
-  };
-
-  // Φιλτράρισμα πελατών
   const filteredClients = clients.filter(client =>
-    client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    client.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -115,22 +73,11 @@ const Clients = () => {
             <tr key={client.id} className="border-t hover:bg-gray-50">
               <td className="p-2">{client.name}</td>
               <td className="p-2">{client.email}</td>
-              <td className="p-2">{client.vat_number}</td>
+              <td className="p-2">{client.vat}</td>
               <td className="p-2">{client.phone}</td>
               <td className="p-2">
-                <button
-                  onClick={() => handleEditClient(client)}
-                  className="text-yellow-500 hover:underline"
-                >
-                  Edit
-                </button>
-                {" | "}
-                <button
-                  onClick={() => handleDeleteClient(client.id)}
-                  className="text-red-500 hover:underline"
-                >
-                  Delete
-                </button>
+                <button className="text-yellow-500 hover:underline">Edit</button> |{" "}
+                <button className="text-red-500 hover:underline">Delete</button>
               </td>
             </tr>
           ))}
@@ -140,7 +87,7 @@ const Clients = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white rounded p-4 w-1/3">
-            <h3 className="text-xl mb-4">{isEditMode ? "Edit Client" : "Add Client"}</h3>
+            <h3 className="text-xl mb-4">Add Client</h3>
             <input
               type="text"
               placeholder="Name"
@@ -171,7 +118,7 @@ const Clients = () => {
             />
             <div className="flex justify-end space-x-2">
               <button
-                onClick={resetModal}
+                onClick={() => setIsModalOpen(false)}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
               >
                 Cancel
@@ -180,7 +127,7 @@ const Clients = () => {
                 onClick={handleAddClient}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
-                {isEditMode ? "Update" : "Save"}
+                Save
               </button>
             </div>
           </div>
